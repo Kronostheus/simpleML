@@ -6,7 +6,7 @@ These are some basic implementations of machine learning algorithms from scratch
 
 Currently, this repository contains the following directories:
 
-* `superpvised/`
+* `supervised/`
   * `knn.py` - K Nearest Neighbours Classifier
   * `simple_linear_regression.py` - Linear Regression designed for single dependent and indepent variable
   * `gaussian_naive_bayes.py` - Gaussian Naive Bayes classifier
