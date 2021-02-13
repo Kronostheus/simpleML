@@ -17,6 +17,7 @@ Currently, this repository contains the following directories:
   * `kmeans.py` - simple KMeans
   * `dbscan.py` - DBSCAN
   * `mean_shift.py` - Mean Shift
+  * `rake.py` - Rapid Automatic Keyword Extraction
   * `spectral_clustering.py` - Spectral Clustering
 * `utils/`
   * `metrics.py` - system evaluation metrics
