@@ -1,4 +1,4 @@
-# simpleML
+# plainML
 Very crude implementations of common machine learning algorithms.
 
 
