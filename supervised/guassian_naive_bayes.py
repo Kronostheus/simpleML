@@ -26,7 +26,7 @@ class GaussianNB:
         self.classes = np.unique(y_train)
 
         # Save P(c) for every class c
-        self.class_priors = {c: np.mean(y == c) for c in self.classes}
+        self.class_priors = {c: np.mean(y_train == c) for c in self.classes}
 
         # Save mean and variance of features (columns) attending to their label/class
         self.parameters = {c: [param(np.mean(Xc), np.var(Xc))
