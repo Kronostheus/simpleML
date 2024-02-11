@@ -65,8 +65,6 @@ class LogisticRegression:
 
 
 if __name__ == "__main__":
-    import matplotlib.pyplot as plt
-    from sklearn.datasets import make_classification
     X = np.linspace(-10, 10)
     t = 1.0 / (1.0 + np.exp(-X))
 
