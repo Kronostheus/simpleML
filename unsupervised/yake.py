@@ -500,12 +500,12 @@ class YAKE:
 
 
 if __name__ == "__main__":
-    text_content = "In this work, we propose a lightweight approach for keyword extraction and ranking based on an " \
-        "unsupervised methodology to select the most important keywords of a single document. To understand " \
-        "the merits of our proposal, we compare it against RAKE, textrank and singlerank methods (three well-known " \
-        "unsupervised approaches) and the baseline tf-idf, over four different collections to illustrate the " \
-        "generality of our approach. The experimental results suggest that extracting keywords from documents using " \
-        "our method results in a superior effectiveness when compared to similar approaches."
+    text_content = ("In this work, we propose a lightweight approach for keyword extraction and ranking based on an "
+        "unsupervised methodology to select the most important keywords of a single document. To understand "
+        "the merits of our proposal, we compare it against RAKE, textrank and singlerank methods (three well-known "
+        "unsupervised approaches) and the baseline tf-idf, over four different collections to illustrate the "
+        "generality of our approach. The experimental results suggest that extracting keywords from documents using "
+        "our method results in a superior effectiveness when compared to similar approaches.")
 
     reproduce_yake = True
 
