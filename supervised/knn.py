@@ -7,30 +7,30 @@ class KNN:
     def __init__(self, k, p=2):
         self.k = k
         self.p = p
-        self.X_train, self.y_train = None, None
+        self.features, self.classes = None, None
 
-    def fit(self, X_train, y_train):
+    def fit(self, features, classes):
         """
         Fits training data to classifier
         :param X_train:
-        :param y_train:
+        :param classes:
         :return:
         """
-        self.X_train = X_train
-        self.y_train = y_train
+        self.features = features
+        self.classes = classes
 
-    def predict(self, X_test):
+    def predict(self, features):
         """
         Predicts the labels of the test dataset according to their K-Nearest Neighbors
         :param X_test: test dataset
         :return: List of predicted labels
         """
 
-        assert self.X_train and self.y_train
+        assert self.features and self.classes
 
         y_pred = []
 
-        for sample in X_test:
+        for sample in features:
             # Compute distances from each test sample to every training example
             distances = [minkowski_distance(sample, train_i, p=self.p) for train_i in self.X_train]
 

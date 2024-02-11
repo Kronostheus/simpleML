@@ -12,26 +12,26 @@ class GaussianNB:
         self.classes = None
         self.class_priors = None
 
-    def fit(self, X_train, y_train):
+    def fit(self, features, labels):
         """
         Initializes parameters:
         Class labels;
         Calculate class priors (frequency);
         For every class -> calculate mean and variance for each column (feature);
-        :param X_train: features
-        :param y_train: labels
+        :param features: features
+        :param labels: labels
         :return: None
         """
 
         # Save class label array
-        self.classes = np.unique(y_train)
+        self.classes = np.unique(labels)
 
         # Save P(c) for every class c
-        self.class_priors = {c: np.mean(y_train == c) for c in self.classes}
+        self.class_priors = {c: np.mean(labels == c) for c in self.classes}
 
         # Save mean and variance of features (columns) attending to their label/class
         self.parameters = {c: [param(np.mean(Xc), np.var(Xc))
-                               for Xc in X_train[np.where(y_train == c)].T]
+                               for Xc in features[np.where(labels == c)].T]
                            for c in self.classes}
 
     @staticmethod
@@ -47,13 +47,13 @@ class GaussianNB:
         denominator = math.sqrt(2 * math.pi * parameter.variance)
         return numerator / denominator
 
-    def predict(self, X_test):
+    def predict(self, features):
         """
         Computes the labels for unseen data using a joint probability model classifier, leveraging the chain rule:
             P(C, x1, ..., xn) = P(C) * P(x1|C) * ... * P(xn|C)
         The predicted label will be the one who maximizes this probability.
         Assumes that features x are mutually independent, conditional on the class.
-        :param X_test: data samples to predict
+        :param features: data samples to predict
         :return: predicted labels
         """
         return [
@@ -68,7 +68,7 @@ class GaussianNB:
                     for c, params in self.parameters.items()])
             ]
             # For every data sample
-            for sample in X_test
+            for sample in features
         ]
 
 

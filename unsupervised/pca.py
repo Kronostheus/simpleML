@@ -114,7 +114,7 @@ def sklearn_svd_flip(matrix, components):
 
 if __name__ == "__main__":
     from sklearn.datasets import load_iris
-    from sklearn.decomposition import PCA as SklearnPCA
+    from sklearn.decomposition import PCA as SklearnPCA  # noqa: N811 -> PCA not constant
 
 
     X = load_iris().data
