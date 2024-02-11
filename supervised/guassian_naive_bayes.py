@@ -42,7 +42,8 @@ class GaussianNB:
         :param parameter: parameter tuple associated with feature and class
         :return: probability distribution of x given class c -> P(x|c)
         """
-        assert parameter.variance != 0
+        if parameter.variance == 0:
+            raise ZeroDivisionError("Variance is Zero")
         numerator = math.exp(-((x - parameter.mean) ** 2) / (2 * parameter.variance))
         denominator = math.sqrt(2 * math.pi * parameter.variance)
         return numerator / denominator

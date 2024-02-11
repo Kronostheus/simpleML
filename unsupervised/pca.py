@@ -126,9 +126,11 @@ if __name__ == "__main__":
     pca = PCA(n_components=n_comp)
     Xt_pca = pca.fit_transform(X)
 
-    assert np.allclose(pca.explained_variance_ratio, sklearn_pca.explained_variance_ratio_)
-    assert np.allclose(pca.explained_variance, sklearn_pca.explained_variance_)
-
-    # Components are not directly comparable due to sklearn's eigenvector flip
-    assert np.allclose(sklearn_svd_flip(pca.cov_matrix, n_comp), sklearn_pca.components_)
+    if not (
+        np.allclose(pca.explained_variance_ratio, sklearn_pca.explained_variance_ratio_)
+        and np.allclose(pca.explained_variance, sklearn_pca.explained_variance_)
+        # Components are not directly comparable due to sklearn's eigenvector flip
+        and np.allclose(sklearn_svd_flip(pca.cov_matrix, n_comp), sklearn_pca.components_)
+    ):
+        raise Exception("Algorithms do not match")
 

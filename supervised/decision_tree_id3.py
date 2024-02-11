@@ -132,4 +132,5 @@ if __name__ == "__main__":
         [2, 2, 0, 0],   # Rainy, Cool, High, Weak
         [2, 0, 1, 1]    # Rainy, Hot, Normal, Strong
     ])
-    assert preds == [0, 1, 1, 1, 0]
+    if preds != [0, 1, 1, 1, 0]:
+        raise Exception("Test failed")

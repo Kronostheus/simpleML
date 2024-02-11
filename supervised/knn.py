@@ -26,7 +26,8 @@ class KNN:
         :return: List of predicted labels
         """
 
-        assert self.features and self.classes
+        if not (self.classes and self.features):
+            raise ValueError("Call fit() first.")
 
         y_pred = []
 

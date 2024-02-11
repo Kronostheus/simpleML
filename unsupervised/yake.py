@@ -519,7 +519,8 @@ if __name__ == "__main__":
             stop_lst = f.read().splitlines()
 
         original_stopword_length = 575
-        assert len(stop_lst) == original_stopword_length
+        if len(stop_lst) != original_stopword_length:
+            raise ValueError("Stopword list is different")
 
         yake = YAKE(stoplist=stop_lst, reproduce=reproduce_yake, window=1)
         response = yake.extract_keywords(text_content, stopword_weighting='penalize', num_keywords=50)
@@ -551,8 +552,8 @@ if __name__ == "__main__":
             ('approach for keyword', 0.387358), ('understand', 0.408918)
         ]
 
-        assert all((keyword.lower(), score) in actual_yake_response for keyword, score in response)
-
+        if not all((keyword.lower(), score) in actual_yake_response for keyword, score in response):
+            raise ValueError("Algorithm changed")
     else:
         yake = YAKE(window=1)
         response = yake.extract_keywords(text_content, num_keywords=10)

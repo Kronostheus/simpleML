@@ -2,13 +2,15 @@ import numpy as np
 
 
 def accuracy(y_true, y_pred):
-    assert len(y_true) == len(y_pred)
+    if len(y_true) != len(y_pred):
+        raise ValueError("Vectors have different lengths")
 
     return np.sum(y_true == y_pred, axis=0) / len(y_true)
 
 
 def r2_score(y_true, y_pred):
-    assert len(y_true) == len(y_pred)
+    if len(y_true) != len(y_pred):
+        raise ValueError("Vectors have different lengths")
 
     true_mean = np.mean(y_true, axis=0)
 

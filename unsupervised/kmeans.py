@@ -73,7 +73,8 @@ class KMeans:
         :param samples: unseen data samples
         :return: cluster labels associated with data samples
         """
-        assert self.centroids
+        if not self.centroids:
+            raise ValueError("Algorithm not fitted yet")
         return self._get_clusters(self.centroids, samples)[1]
 
 
