@@ -114,5 +114,3 @@ fig2, (ax3, ax4) = plt.subplots(2, 1, figsize=(6.4, 6.4))
 ax3.scatter(Z[:, 0], Z[:, 1])
 ax4.scatter(Z[:, 0], Z[:, 1], color=colors)
 plt.show()
-
-breakpoint()

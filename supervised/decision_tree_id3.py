@@ -130,4 +130,3 @@ preds = tree.predict([
     [2, 0, 1, 1]    # Rainy, Hot, Normal, Strong
 ])
 assert preds == [0, 1, 1, 1, 0]
-breakpoint()

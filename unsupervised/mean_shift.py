@@ -71,4 +71,3 @@ ax2.scatter(meanshift.centroids[:, 0], meanshift.centroids[:, 1], color='black',
 ax2.set_xlabel('$x_0$')
 ax2.set_ylabel('$x_1$')
 fig2.show()
-breakpoint()

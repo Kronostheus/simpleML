@@ -88,5 +88,3 @@ fig, ax = plt.subplots(figsize=(4, 4))
 ax.scatter(X[:, 0], X[:, 1], color=colors, alpha=0.5)
 ax.set_title('Spectral Clustering')
 fig.show()
-
-breakpoint()
