@@ -88,29 +88,30 @@ class DBSCAN:
                 if i != query_index and minkowski_distance(self.samples[query_index], self.samples[i]) <= self.eps]
 
 
-X, _ = make_moons(300, noise=0.05)
+if __name__ == "__main__":
+    X, _ = make_moons(300, noise=0.05)
 
-dbscan = DBSCAN()
-dbscan.fit(X)
-labels = dbscan.predict()
+    dbscan = DBSCAN()
+    dbscan.fit(X)
+    labels = dbscan.predict()
 
-group_colors = ['lightgreen', 'coral', 'skyblue']
-colors = [group_colors[j] for j in labels]
+    group_colors = ['lightgreen', 'coral', 'skyblue']
+    colors = [group_colors[j] for j in labels]
 
-fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(6.4, 6.4))
-ax1.scatter(X[:, 0], X[:, 1])
-ax2.scatter(X[:, 0], X[:, 1], color=colors)
-plt.show()
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(6.4, 6.4))
+    ax1.scatter(X[:, 0], X[:, 1])
+    ax2.scatter(X[:, 0], X[:, 1], color=colors)
+    plt.show()
 
-Z, _ = make_circles(300, noise=0.05, factor=0.5)
+    Z, _ = make_circles(300, noise=0.05, factor=0.5)
 
-dbscan2 = DBSCAN()
-dbscan2.fit(Z)
-_labels = dbscan2.predict()
+    dbscan2 = DBSCAN()
+    dbscan2.fit(Z)
+    _labels = dbscan2.predict()
 
-colors = [group_colors[j] for j in _labels]
+    colors = [group_colors[j] for j in _labels]
 
-fig2, (ax3, ax4) = plt.subplots(2, 1, figsize=(6.4, 6.4))
-ax3.scatter(Z[:, 0], Z[:, 1])
-ax4.scatter(Z[:, 0], Z[:, 1], color=colors)
-plt.show()
+    fig2, (ax3, ax4) = plt.subplots(2, 1, figsize=(6.4, 6.4))
+    ax3.scatter(Z[:, 0], Z[:, 1])
+    ax4.scatter(Z[:, 0], Z[:, 1], color=colors)
+    plt.show()

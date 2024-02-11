@@ -36,19 +36,20 @@ class LinearRegression:
         return [self.b1 * xi + self.b0 for xi in x]
 
 
-X, y, coef = make_regression(n_samples=300, n_features=1, n_informative=1, noise=10, coef=True, random_state=0)
+if __name__ == "__main__":
+    X, y, coef = make_regression(n_samples=300, n_features=1, n_informative=1, noise=10, coef=True, random_state=0)
 
-lr = LinearRegression()
-lr.fit(X, y)
+    lr = LinearRegression()
+    lr.fit(X, y)
 
-x_line = np.arange(X.min(), X.max())
-y_line = lr.predict(x_line)
+    x_line = np.arange(X.min(), X.max())
+    y_line = lr.predict(x_line)
 
-fig, ax = plt.subplots(figsize=(4, 4))
+    fig, ax = plt.subplots(figsize=(4, 4))
 
-ax.scatter(X, y, alpha=0.5)
-ax.plot(x_line, y_line, color='navy')
+    ax.scatter(X, y, alpha=0.5)
+    ax.plot(x_line, y_line, color='navy')
 
-ax.set_xlabel('$x_1$')
-ax.set_ylabel('$x_2$')
-fig.show()
+    ax.set_xlabel('$x_1$')
+    ax.set_ylabel('$x_2$')
+    fig.show()

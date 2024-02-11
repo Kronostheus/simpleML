@@ -496,58 +496,59 @@ class YAKE:
         return best_keywords
 
 
-text_content = "In this work, we propose a lightweight approach for keyword extraction and ranking based on an " \
-       "unsupervised methodology to select the most important keywords of a single document. To understand " \
-       "the merits of our proposal, we compare it against RAKE, textrank and singlerank methods (three well-known " \
-       "unsupervised approaches) and the baseline tf-idf, over four different collections to illustrate the " \
-       "generality of our approach. The experimental results suggest that extracting keywords from documents using " \
-       "our method results in a superior effectiveness when compared to similar approaches."
+if __name__ == "__main__":
+    text_content = "In this work, we propose a lightweight approach for keyword extraction and ranking based on an " \
+        "unsupervised methodology to select the most important keywords of a single document. To understand " \
+        "the merits of our proposal, we compare it against RAKE, textrank and singlerank methods (three well-known " \
+        "unsupervised approaches) and the baseline tf-idf, over four different collections to illustrate the " \
+        "generality of our approach. The experimental results suggest that extracting keywords from documents using " \
+        "our method results in a superior effectiveness when compared to similar approaches."
 
-reproduce_yake = True
+    reproduce_yake = True
 
-# Technically I can also just install yake in this project as well
-# Install official YAKE algorithm via pip -> pip install git+https://github.com/LIAAD/yake
-# Tested with this exact string (abstract to YAKE paper from ECIR 2018) using version 0.4.4
-if reproduce_yake:
+    # Technically I can also just install yake in this project as well
+    # Install official YAKE algorithm via pip -> pip install git+https://github.com/LIAAD/yake
+    # Tested with this exact string (abstract to YAKE paper from ECIR 2018) using version 0.4.4
+    if reproduce_yake:
 
-    # Since I do not own stopword list, I won't include it in this project
-    with open('../data/stopwords_en.txt') as f:
-        stop_lst = f.read().splitlines()
+        # Since I do not own stopword list, I won't include it in this project
+        with open('../data/stopwords_en.txt') as f:
+            stop_lst = f.read().splitlines()
 
-    assert len(stop_lst) == 575
+        assert len(stop_lst) == 575
 
-    yake = YAKE(stoplist=stop_lst, reproduce=reproduce_yake, window=1)
-    response = yake.extract_keywords(text_content, stopword_weighting='penalize', num_keywords=50)
+        yake = YAKE(stoplist=stop_lst, reproduce=reproduce_yake, window=1)
+        response = yake.extract_keywords(text_content, stopword_weighting='penalize', num_keywords=50)
 
-    # This list was obtained in the following manner, using official YAKE algorithm
-    #
-    # import yake
-    # kw_extractor = yake.KeywordExtractor(top=50, dedupLim=0.8)
-    # actual_yake_response = [(k, round(v, 6))for k,v in kw_extractor.extract_keywords(text)]
+        # This list was obtained in the following manner, using official YAKE algorithm
+        #
+        # import yake
+        # kw_extractor = yake.KeywordExtractor(top=50, dedupLim=0.8)
+        # actual_yake_response = [(k, round(v, 6))for k,v in kw_extractor.extract_keywords(text)]
 
-    actual_yake_response = [
-        ('propose a lightweight', 0.028374), ('extraction and ranking', 0.028374), ('ranking based', 0.028374),
-        ('methodology to select', 0.028374), ('well-known unsupervised approaches', 0.046841),
-        ('lightweight approach', 0.049308), ('unsupervised methodology', 0.049308), ('single document', 0.064314),
-        ('keyword extraction', 0.069818), ('important keywords', 0.069818), ('unsupervised approaches', 0.093349),
-        ('work', 0.127663), ('well-known unsupervised', 0.130814), ('approach', 0.141448), ('unsupervised', 0.141448),
-        ('approaches', 0.150902), ('textrank and singlerank', 0.159825), ('baseline tf-idf', 0.159825),
-        ('propose', 0.166106), ('lightweight', 0.166106), ('extraction', 0.166106), ('ranking', 0.166106),
-        ('based', 0.166106), ('methodology', 0.166106), ('select', 0.166106), ('important', 0.166106),
-        ('single', 0.166106), ('similar approaches', 0.178547), ('rake', 0.181201), ('keywords', 0.196446),
-        ('understand the merits', 0.200788), ('collections to illustrate', 0.200788),
-        ('illustrate the generality', 0.200788), ('singlerank methods', 0.205429),
-        ('extracting keywords', 0.245673), ('results', 0.251994),
-        ('experimental results suggest', 0.256018), ('method results', 0.265889), ('suggest that extracting', 0.336858),
-        ('superior effectiveness', 0.336858), ('effectiveness when compared', 0.336858),
-        ('compared to similar', 0.336858), ('proposal', 0.336989), ('textrank', 0.336989), ('tf-idf', 0.336989),
-        ('experimental results', 0.338667), ('results suggest', 0.338667), ('document', 0.363788),
-        ('approach for keyword', 0.387358), ('understand', 0.408918)
-    ]
+        actual_yake_response = [
+            ('propose a lightweight', 0.028374), ('extraction and ranking', 0.028374), ('ranking based', 0.028374),
+            ('methodology to select', 0.028374), ('well-known unsupervised approaches', 0.046841),
+            ('lightweight approach', 0.049308), ('unsupervised methodology', 0.049308), ('single document', 0.064314),
+            ('keyword extraction', 0.069818), ('important keywords', 0.069818), ('unsupervised approaches', 0.093349),
+            ('work', 0.127663), ('well-known unsupervised', 0.130814), ('approach', 0.141448), ('unsupervised', 0.141448),
+            ('approaches', 0.150902), ('textrank and singlerank', 0.159825), ('baseline tf-idf', 0.159825),
+            ('propose', 0.166106), ('lightweight', 0.166106), ('extraction', 0.166106), ('ranking', 0.166106),
+            ('based', 0.166106), ('methodology', 0.166106), ('select', 0.166106), ('important', 0.166106),
+            ('single', 0.166106), ('similar approaches', 0.178547), ('rake', 0.181201), ('keywords', 0.196446),
+            ('understand the merits', 0.200788), ('collections to illustrate', 0.200788),
+            ('illustrate the generality', 0.200788), ('singlerank methods', 0.205429),
+            ('extracting keywords', 0.245673), ('results', 0.251994),
+            ('experimental results suggest', 0.256018), ('method results', 0.265889), ('suggest that extracting', 0.336858),
+            ('superior effectiveness', 0.336858), ('effectiveness when compared', 0.336858),
+            ('compared to similar', 0.336858), ('proposal', 0.336989), ('textrank', 0.336989), ('tf-idf', 0.336989),
+            ('experimental results', 0.338667), ('results suggest', 0.338667), ('document', 0.363788),
+            ('approach for keyword', 0.387358), ('understand', 0.408918)
+        ]
 
-    assert all((keyword.lower(), score) in actual_yake_response for keyword, score in response)
+        assert all((keyword.lower(), score) in actual_yake_response for keyword, score in response)
 
-else:
-    yake = YAKE(window=1)
-    response = yake.extract_keywords(text_content, num_keywords=10)
-    print(response)
+    else:
+        yake = YAKE(window=1)
+        response = yake.extract_keywords(text_content, num_keywords=10)
+        print(response)

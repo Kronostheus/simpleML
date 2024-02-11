@@ -114,18 +114,19 @@ def sklearn_svd_flip(matrix, components):
     return eig_vectors[:, :components].T
 
 
-X = load_iris().data
-n_comp = 2
+if __name__ == "__main__":
+    X = load_iris().data
+    n_comp = 2
 
-sklearn_pca = SklearnPCA(n_components=n_comp)
-Xt_sklearn = sklearn_pca.fit_transform(X)
+    sklearn_pca = SklearnPCA(n_components=n_comp)
+    Xt_sklearn = sklearn_pca.fit_transform(X)
 
-pca = PCA(n_components=n_comp)
-Xt_pca = pca.fit_transform(X)
+    pca = PCA(n_components=n_comp)
+    Xt_pca = pca.fit_transform(X)
 
-assert np.allclose(pca.explained_variance_ratio, sklearn_pca.explained_variance_ratio_)
-assert np.allclose(pca.explained_variance, sklearn_pca.explained_variance_)
+    assert np.allclose(pca.explained_variance_ratio, sklearn_pca.explained_variance_ratio_)
+    assert np.allclose(pca.explained_variance, sklearn_pca.explained_variance_)
 
-# Components are not directly comparable due to sklearn's eigenvector flip
-assert np.allclose(sklearn_svd_flip(pca.cov_matrix, n_comp), sklearn_pca.components_)
+    # Components are not directly comparable due to sklearn's eigenvector flip
+    assert np.allclose(sklearn_svd_flip(pca.cov_matrix, n_comp), sklearn_pca.components_)
 

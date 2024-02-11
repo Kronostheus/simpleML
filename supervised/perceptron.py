@@ -75,28 +75,29 @@ class Perceptron:
         return -1 if x < 0 else 1
 
 
-# Positive examples
-P = np.array([[-2, 0], [-1, 0.5], [0, -0.1], [1, -1.5]])
+if __name__ == "__main__":
+    # Positive examples
+    P = np.array([[-2, 0], [-1, 0.5], [0, -0.1], [1, -1.5]])
 
-# Negative examples
-N = np.array([[2, 0], [1, 0.5], [0, 0.4], [1, 1.5]])
+    # Negative examples
+    N = np.array([[2, 0], [1, 0.5], [0, 0.4], [1, 1.5]])
 
-X = np.vstack((P, N))
-y = np.hstack((np.ones(P.shape[0]), -np.ones(N.shape[0])))
+    X = np.vstack((P, N))
+    y = np.hstack((np.ones(P.shape[0]), -np.ones(N.shape[0])))
 
-clf = Perceptron(epochs=1000, learning_rate=0.01)
-clf.fit(X, y)
-preds = clf.predict(X)
+    clf = Perceptron(epochs=1000, learning_rate=0.01)
+    clf.fit(X, y)
+    preds = clf.predict(X)
 
-p_pred = X[np.nonzero(preds == 1)]
-n_pred = X[np.nonzero(preds == -1)]
+    p_pred = X[np.nonzero(preds == 1)]
+    n_pred = X[np.nonzero(preds == -1)]
 
-fig, (ax1, ax2) = plt.subplots(2, 1)
-ax1.plot(P[:, 0], P[:, 1], 'go', label='True Positive Examples')
-ax1.plot(N[:, 0], N[:, 1], 'ro', label='True Negative Examples')
-ax1.legend(loc='best')
+    fig, (ax1, ax2) = plt.subplots(2, 1)
+    ax1.plot(P[:, 0], P[:, 1], 'go', label='True Positive Examples')
+    ax1.plot(N[:, 0], N[:, 1], 'ro', label='True Negative Examples')
+    ax1.legend(loc='best')
 
-ax2.plot(p_pred[:, 0], p_pred[:, 1], 'go', label='Predicted Positive Examples')
-ax2.plot(n_pred[:, 0], n_pred[:, 1], 'ro', label='Predicted Positive Examples')
-ax2.legend(loc='best')
-plt.show()
+    ax2.plot(p_pred[:, 0], p_pred[:, 1], 'go', label='Predicted Positive Examples')
+    ax2.plot(n_pred[:, 0], n_pred[:, 1], 'ro', label='Predicted Positive Examples')
+    ax2.legend(loc='best')
+    plt.show()

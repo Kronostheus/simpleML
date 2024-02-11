@@ -71,9 +71,11 @@ class GaussianNB:
         ]
 
 
-X = np.array([[-1, -1], [-2, -1], [-3, -2], [1, 1], [2, 1], [3, 2]])
-y = np.array([1, 1, 1, 2, 2, 2])
 
-gnb = GaussianNB()
-gnb.fit(X, y)
-y_pred = gnb.predict(np.array([[-0.8, -1]]))
+if __name__ == "__main__":
+    X = np.array([[-1, -1], [-2, -1], [-3, -2], [1, 1], [2, 1], [3, 2]])
+    y = np.array([1, 1, 1, 2, 2, 2])
+
+    gnb = GaussianNB()
+    gnb.fit(X, y)
+    y_pred = gnb.predict(np.array([[-0.8, -1]]))
