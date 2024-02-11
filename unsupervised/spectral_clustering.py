@@ -1,7 +1,5 @@
 import numpy as np
 import scipy as sp
-import matplotlib.pyplot as plt
-from sklearn.datasets import make_moons
 from utils.calculations import minkowski_distance
 from unsupervised.kmeans import KMeans
 
@@ -76,6 +74,8 @@ class Spectral:
 
 
 if __name__ == "__main__":
+    import matplotlib.pyplot as plt
+    from sklearn.datasets import make_moons
     # Generate dataset
     X, _ = make_moons(300, noise=0.05)
 

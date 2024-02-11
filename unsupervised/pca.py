@@ -1,6 +1,5 @@
 import numpy as np
-from sklearn.decomposition import PCA as SklearnPCA
-from sklearn.datasets import load_iris
+
 
 
 class PCA:
@@ -115,6 +114,10 @@ def sklearn_svd_flip(matrix, components):
 
 
 if __name__ == "__main__":
+    from sklearn.decomposition import PCA as SklearnPCA
+    from sklearn.datasets import load_iris
+
+    
     X = load_iris().data
     n_comp = 2
 

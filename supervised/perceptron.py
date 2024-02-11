@@ -1,5 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
 
 
 class Perceptron:
@@ -76,6 +75,9 @@ class Perceptron:
 
 
 if __name__ == "__main__":
+    import matplotlib.pyplot as plt
+
+
     # Positive examples
     P = np.array([[-2, 0], [-1, 0.5], [0, -0.1], [1, -1.5]])
 

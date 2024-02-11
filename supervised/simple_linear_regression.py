@@ -1,6 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
-from sklearn.datasets import make_regression
 
 
 class LinearRegression:
@@ -37,6 +35,10 @@ class LinearRegression:
 
 
 if __name__ == "__main__":
+    import matplotlib.pyplot as plt
+    from sklearn.datasets import make_regression
+
+
     X, y, coef = make_regression(n_samples=300, n_features=1, n_informative=1, noise=10, coef=True, random_state=0)
 
     lr = LinearRegression()

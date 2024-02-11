@@ -1,6 +1,5 @@
-import matplotlib.pyplot as plt
 from utils.calculations import minkowski_distance
-from sklearn.datasets import make_moons, make_circles
+
 
 
 class DBSCAN:
@@ -28,7 +27,7 @@ class DBSCAN:
         # Dictionary with corresponding cluster labels of fitted data samples
         self.labels = {i: None for i, _ in enumerate(self.samples)}
 
-        for idx, sample in enumerate(self.samples):
+        for idx, _ in enumerate(self.samples):
 
             # Sample already visited
             if self.labels[idx]:
@@ -89,6 +88,10 @@ class DBSCAN:
 
 
 if __name__ == "__main__":
+    import matplotlib.pyplot as plt
+    from sklearn.datasets import make_moons, make_circles
+
+    
     X, _ = make_moons(300, noise=0.05)
 
     dbscan = DBSCAN()

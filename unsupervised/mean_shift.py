@@ -1,6 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
-from sklearn.datasets import make_blobs
 from tqdm import tqdm
 from utils.calculations import minkowski_distance
 
@@ -60,6 +58,10 @@ class MeanShift:
 
 
 if __name__ == "__main__":
+    import matplotlib.pyplot as plt
+    from sklearn.datasets import make_blobs
+
+    
     X, _ = make_blobs(centers=3, n_samples=100, random_state=1)
 
     meanshift = MeanShift(bandwidth=3)
