@@ -18,8 +18,10 @@ matplotlib = "^3.8.2"
 ruff = "^0.2.1"
 
 [tool.ruff]
-lint.select = ["E", "F", "I", "B", "W", "N"]
-
+lint.select = ["E", "F", "I", "B", "W", "N", "UP", "A", "NPY", "PTH", "RET", "SIM", "ARG", "PL"]
+lint.ignore = [
+    "PTH123"  #  `open()` should be replaced by `Path.open()`
+]
 line-length = 120
 exclude = ["__init__.py"]
 

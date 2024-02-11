@@ -11,7 +11,7 @@ def levenshtein_distance(first_sequence, second_sequence, del_cost=1, ins_cost=1
     rows = len(first_sequence) + 1
     cols = len(second_sequence) + 1
 
-    distances = np.zeros(shape=(rows, cols), dtype=np.int)
+    distances = np.zeros(shape=(rows, cols), dtype=int)
 
     for row in range(1, rows):
         distances[row, 0] = del_cost * row

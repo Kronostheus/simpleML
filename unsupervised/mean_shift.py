@@ -35,7 +35,7 @@ class MeanShift:
                 new_centroid = np.mean([sample for sample in in_bandwidth.values()], axis=0)
 
                 # Modify centroid array
-                for idx in in_bandwidth.keys():
+                for idx in in_bandwidth:
                     new_centroids[idx] = new_centroid
 
             # If cluster centers (centroids) have not shifted, they have converged

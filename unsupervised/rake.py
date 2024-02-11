@@ -134,17 +134,17 @@ class RAKE:
         adjoining = []
 
         # Sliding window on pairs of keywords
-        for former, latter in zip(keywords, keywords[1:]):
+        for _former, _latter in zip(keywords, keywords[1:]):
 
             # Total keywords if both elements are joined
-            total_keywords = len(former) + len(latter)
+            total_keywords = len(_former) + len(_latter)
 
             # Final keyword amount must not exceed the maximum or be lower than the minimum allowed
             if total_keywords > self.max_length or total_keywords < self.min_length:
                 continue
 
             # Join elements in string form (they have not been converted to Candidate yet)
-            former, latter = [" ".join(keywords) for keywords in (former, latter)]
+            former, latter = (" ".join(keywords) for keywords in (_former, _latter))
 
             # Find potential interior stopwords (this has the possibility of finding weird matches as well)
             all_matches = re.findall(rf'{former}([\w\s]+?){latter}', original_text)
@@ -155,7 +155,7 @@ class RAKE:
             # The connecting stopwords must be found in the text at least twice
             if len(filter_matches) > 1:
                 adjoining.extend([
-                    Candidate([former, latter], '{}{}{}'.format(former, interior_keywords, latter))
+                    Candidate([former, latter], f'{former}{interior_keywords}{latter}')
                     for interior_keywords, count in Counter(filter_matches).items()
                     if count > 1
                 ])
