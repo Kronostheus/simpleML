@@ -19,7 +19,7 @@ class LinearRegression:
         """
 
         # Coefficient is the division between cov(x,y) and var(x)
-        self.b1 = np.cov(x.T, y, axis=0)[0][1] / np.var(x, axis=0)
+        self.b1 = np.cov(x.T, y, rowvar=0)[0][1] / np.var(x, axis=0)
 
         # Intercept is mean(y) - coefficient * mean(x)
         self.b0 = np.mean(y, axis=0) - self.b1 * np.mean(x, axis=0)
