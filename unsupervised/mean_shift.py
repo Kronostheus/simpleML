@@ -32,7 +32,7 @@ class MeanShift:
                                 minkowski_distance(sample, centroid, p=2) < self.bandwidth}
 
                 # Compute the mean of the samples found as their cluster center
-                new_centroid = np.mean([sample for sample in in_bandwidth.values()], axis=0)
+                new_centroid = np.mean(list(in_bandwidth.values()), axis=0)
 
                 # Modify centroid array
                 for idx in in_bandwidth:
