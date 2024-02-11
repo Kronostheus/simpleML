@@ -197,6 +197,6 @@ if __name__ == "__main__":
     rake = RAKE('english')
     result = rake.extract_keywords(test_text)
 
-    assert result == ['minimal generating sets', 'linear diophantine equations', 'minimal supporting set', 
-                      'minimal set', 'linear constraints', 'natural numbers', 'strict inequations', 
+    assert result == ['minimal generating sets', 'linear diophantine equations', 'minimal supporting set',
+                      'minimal set', 'linear constraints', 'natural numbers', 'strict inequations',
                       'nonstrict inequations', 'upper bounds']

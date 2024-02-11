@@ -100,7 +100,7 @@ class ID3Tree:
                 # Get next branch based on node feature
                 curr_branch = curr_branch.branches[sample[curr_branch.node]]
         return decisions
-    
+
 
 if __name__ == "__main__":
 

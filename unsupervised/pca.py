@@ -116,7 +116,7 @@ if __name__ == "__main__":
     from sklearn.datasets import load_iris
     from sklearn.decomposition import PCA as SklearnPCA
 
-    
+
     X = load_iris().data
     n_comp = 2
 

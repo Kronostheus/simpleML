@@ -90,7 +90,7 @@ if __name__ == "__main__":
     import matplotlib.pyplot as plt
     from sklearn.datasets import make_circles, make_moons
 
-    
+
     X, _ = make_moons(300, noise=0.05)
 
     dbscan = DBSCAN()
