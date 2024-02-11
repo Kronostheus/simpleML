@@ -1,12 +1,16 @@
 import re
-from collections import Counter, namedtuple
+from collections import Counter
 from itertools import groupby, repeat
 from string import punctuation
+from typing import NamedTuple
 
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 
-Candidate = namedtuple('Candidate', 'elements text')
+
+class Candidate(NamedTuple):
+    elements: list[str]
+    text: str
 
 
 class RAKE:

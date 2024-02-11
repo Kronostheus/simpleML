@@ -1,9 +1,12 @@
 import math
-from collections import namedtuple
+from typing import NamedTuple
 
 import numpy as np
 
-param = namedtuple("param", "mean variance")
+
+class Param(NamedTuple):
+    mean: float
+    variance: float
 
 
 class GaussianNB:
@@ -30,7 +33,7 @@ class GaussianNB:
         self.class_priors = {c: np.mean(labels == c) for c in self.classes}
 
         # Save mean and variance of features (columns) attending to their label/class
-        self.parameters = {c: [param(np.mean(Xc), np.var(Xc))
+        self.parameters = {c: [Param(np.mean(Xc), np.var(Xc))
                                for Xc in features[np.where(labels == c)].T]
                            for c in self.classes}
 
