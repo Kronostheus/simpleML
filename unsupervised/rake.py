@@ -1,12 +1,16 @@
 import re
+from collections import Counter
+from itertools import groupby, repeat
+from string import punctuation
+from typing import NamedTuple
+
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
-from string import punctuation
-from itertools import groupby, repeat
-from collections import Counter, namedtuple
 
 
-Candidate = namedtuple('Candidate', 'elements text')
+class Candidate(NamedTuple):
+    elements: list[str]
+    text: str
 
 
 class RAKE:
@@ -134,17 +138,17 @@ class RAKE:
         adjoining = []
 
         # Sliding window on pairs of keywords
-        for former, latter in zip(keywords, keywords[1:]):
+        for _former, _latter in zip(keywords, keywords[1:]):
 
             # Total keywords if both elements are joined
-            total_keywords = len(former) + len(latter)
+            total_keywords = len(_former) + len(_latter)
 
             # Final keyword amount must not exceed the maximum or be lower than the minimum allowed
             if total_keywords > self.max_length or total_keywords < self.min_length:
                 continue
 
             # Join elements in string form (they have not been converted to Candidate yet)
-            former, latter = [" ".join(keywords) for keywords in (former, latter)]
+            former, latter = (" ".join(keywords) for keywords in (_former, _latter))
 
             # Find potential interior stopwords (this has the possibility of finding weird matches as well)
             all_matches = re.findall(rf'{former}([\w\s]+?){latter}', original_text)
@@ -155,7 +159,7 @@ class RAKE:
             # The connecting stopwords must be found in the text at least twice
             if len(filter_matches) > 1:
                 adjoining.extend([
-                    Candidate([former, latter], '{}{}{}'.format(former, interior_keywords, latter))
+                    Candidate([former, latter], f'{former}{interior_keywords}{latter}')
                     for interior_keywords, count in Counter(filter_matches).items()
                     if count > 1
                 ])
@@ -187,16 +191,17 @@ class RAKE:
 
 
 if __name__ == "__main__":
-    test_text = "Compatibility of systems of linear constraints over the set of natural numbers.\nCriteria of " \
-                "compatibility of a system of linear Diophantine equations, strict inequations, and nonstrict " \
-                "inequations are considered. Upper bounds for components of a minimal set of solutions and algorithms of " \
-                "construction of minimal generating sets of solutions for all types of systems are given. These criteria " \
-                "and the corresponding algorithms for constructing a minimal supporting set of solutions can be used in " \
-                "solving all the considered types of systems and systems of mixed types"
+    test_text = ("Compatibility of systems of linear constraints over the set of natural numbers.\nCriteria of "
+                "compatibility of a system of linear Diophantine equations, strict inequations, and nonstrict "
+                "inequations are considered. Upper bounds for components of a minimal set of solutions "
+                "and algorithms of construction of minimal generating sets of solutions for all types of systems are "
+                "given. These criteria and the corresponding algorithms for constructing a minimal supporting set of "
+                "solutions can be used in solving all the considered types of systems and systems of mixed types")
 
     rake = RAKE('english')
     result = rake.extract_keywords(test_text)
 
-    assert result == ['minimal generating sets', 'linear diophantine equations', 'minimal supporting set', 'minimal set',
-                    'linear constraints', 'natural numbers', 'strict inequations', 'nonstrict inequations',
-                    'upper bounds']
+    if result != ['minimal generating sets', 'linear diophantine equations', 'minimal supporting set',
+                      'minimal set', 'linear constraints', 'natural numbers', 'strict inequations',
+                      'nonstrict inequations', 'upper bounds']:
+        raise Exception("Algorithm changed")

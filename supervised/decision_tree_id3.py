@@ -100,7 +100,7 @@ class ID3Tree:
                 # Get next branch based on node feature
                 curr_branch = curr_branch.branches[sample[curr_branch.node]]
         return decisions
-    
+
 
 if __name__ == "__main__":
 
@@ -132,4 +132,5 @@ if __name__ == "__main__":
         [2, 2, 0, 0],   # Rainy, Cool, High, Weak
         [2, 0, 1, 1]    # Rainy, Hot, Normal, Strong
     ])
-    assert preds == [0, 1, 1, 1, 0]
+    if preds != [0, 1, 1, 1, 0]:
+        raise Exception("Test failed")

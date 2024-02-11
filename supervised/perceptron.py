@@ -8,23 +8,23 @@ class Perceptron:
         self.epochs = epochs
         self.weights = None
 
-    def fit(self, X, y):
+    def fit(self, features, y):
         """
         Train perceptron
-        :param X: features
+        :param features: features
         :param y: targets
         :return: None
         """
 
-        # Add a bias column to X
-        Xb = self.add_bias(X)
+        # Add a bias column to features
+        features = self.add_bias(features)
 
         # Initialize weights according to a uniform distribution
-        w = self.init_weights(Xb)
+        w = self.init_weights(features)
 
         for _ in range(self.epochs):
 
-            for i, x in enumerate(Xb):
+            for i, x in enumerate(features):
 
                 # Compute dot product between weight vector and features
                 y_pred = self.activation(np.dot(w, x))
@@ -35,34 +35,34 @@ class Perceptron:
 
         self.weights = w
 
-    def predict(self, X):
+    def predict(self, features):
         """
-        Predicts the labels associated with X, equivalent to forward pass
-        :param X: data samples
+        Predicts the labels associated with features, equivalent to forward pass
+        :param features: data samples
         :return: labels
         """
-        Xb = self.add_bias(X)
-        return np.array([self.activation(np.dot(self.weights, x)) for x in Xb])
+        features = self.add_bias(features)
+        return np.array([self.activation(np.dot(self.weights, x)) for x in features])
 
     @staticmethod
-    def add_bias(X):
+    def add_bias(features):
         """
-        Add a bias column (value = 1) to X
-        :param X: original data
+        Add a bias column (value = 1) to features
+        :param features: original data
         :return: new data
         """
-        bias = np.ones((X.shape[0], 1))
-        return np.hstack((X, bias))
+        bias = np.ones((features.shape[0], 1))
+        return np.hstack((features, bias))
 
     @staticmethod
-    def init_weights(X):
+    def init_weights(features):
         """
         Initialize weights according to a uniform distribution
-        :param X: feature set (w/ bias)
+        :param features: feature set (w/ bias)
         :return: weight vector
         """
-        bounds = 1.0 / np.sqrt(X.shape[0])
-        return np.random.default_rng().uniform(-bounds, bounds, size=X.shape[1])
+        bounds = 1.0 / np.sqrt(features.shape[0])
+        return np.random.default_rng().uniform(-bounds, bounds, size=features.shape[1])
 
     @staticmethod
     def activation(x):
@@ -84,15 +84,15 @@ if __name__ == "__main__":
     # Negative examples
     N = np.array([[2, 0], [1, 0.5], [0, 0.4], [1, 1.5]])
 
-    X = np.vstack((P, N))
+    features = np.vstack((P, N))
     y = np.hstack((np.ones(P.shape[0]), -np.ones(N.shape[0])))
 
     clf = Perceptron(epochs=1000, learning_rate=0.01)
-    clf.fit(X, y)
-    preds = clf.predict(X)
+    clf.fit(features, y)
+    preds = clf.predict(features)
 
-    p_pred = X[np.nonzero(preds == 1)]
-    n_pred = X[np.nonzero(preds == -1)]
+    p_pred = features[np.nonzero(preds == 1)]
+    n_pred = features[np.nonzero(preds == -1)]
 
     fig, (ax1, ax2) = plt.subplots(2, 1)
     ax1.plot(P[:, 0], P[:, 1], 'go', label='True Positive Examples')

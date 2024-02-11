@@ -1,7 +1,6 @@
 import numpy as np
 
 
-
 class PCA:
     """
     Principle Component Analysis (PCA)
@@ -114,10 +113,10 @@ def sklearn_svd_flip(matrix, components):
 
 
 if __name__ == "__main__":
-    from sklearn.decomposition import PCA as SklearnPCA
     from sklearn.datasets import load_iris
+    from sklearn.decomposition import PCA as SklearnPCA  # noqa: N811 -> PCA not constant
 
-    
+
     X = load_iris().data
     n_comp = 2
 
@@ -127,9 +126,11 @@ if __name__ == "__main__":
     pca = PCA(n_components=n_comp)
     Xt_pca = pca.fit_transform(X)
 
-    assert np.allclose(pca.explained_variance_ratio, sklearn_pca.explained_variance_ratio_)
-    assert np.allclose(pca.explained_variance, sklearn_pca.explained_variance_)
-
-    # Components are not directly comparable due to sklearn's eigenvector flip
-    assert np.allclose(sklearn_svd_flip(pca.cov_matrix, n_comp), sklearn_pca.components_)
+    if not (
+        np.allclose(pca.explained_variance_ratio, sklearn_pca.explained_variance_ratio_)
+        and np.allclose(pca.explained_variance, sklearn_pca.explained_variance_)
+        # Components are not directly comparable due to sklearn's eigenvector flip
+        and np.allclose(sklearn_svd_flip(pca.cov_matrix, n_comp), sklearn_pca.components_)
+    ):
+        raise Exception("Algorithms do not match")
 

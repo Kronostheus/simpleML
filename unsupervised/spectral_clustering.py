@@ -1,7 +1,8 @@
 import numpy as np
 import scipy as sp
-from utils.calculations import minkowski_distance
+
 from unsupervised.kmeans import KMeans
+from utils.calculations import minkowski_distance
 
 
 class Spectral:
@@ -37,7 +38,9 @@ class Spectral:
             for j, sample_j in enumerate(self.samples):
                 if i != j:
                     # A = exp(-d(i, j)^2 / (sigma_i * sigma_j)) where sigma_x = mean(d(x, n) for n closest neighbors)
-                    affinity_matrix[i][j] = np.exp(-(minkowski_distance(sample_i, sample_j, p=2) ** 2) / (scaling_dict[i] * scaling_dict[j]))
+                    affinity_matrix[i][j] = np.exp(
+                        -(minkowski_distance(sample_i, sample_j, p=2) ** 2) / (scaling_dict[i] * scaling_dict[j])
+                    )
 
         return affinity_matrix
 

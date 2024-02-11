@@ -1,5 +1,6 @@
 import numpy as np
 from tqdm import tqdm
+
 from utils.calculations import minkowski_distance
 
 
@@ -31,10 +32,10 @@ class MeanShift:
                                 minkowski_distance(sample, centroid, p=2) < self.bandwidth}
 
                 # Compute the mean of the samples found as their cluster center
-                new_centroid = np.mean([sample for sample in in_bandwidth.values()], axis=0)
+                new_centroid = np.mean(list(in_bandwidth.values()), axis=0)
 
                 # Modify centroid array
-                for idx in in_bandwidth.keys():
+                for idx in in_bandwidth:
                     new_centroids[idx] = new_centroid
 
             # If cluster centers (centroids) have not shifted, they have converged
@@ -61,7 +62,7 @@ if __name__ == "__main__":
     import matplotlib.pyplot as plt
     from sklearn.datasets import make_blobs
 
-    
+
     X, _ = make_blobs(centers=3, n_samples=100, random_state=1)
 
     meanshift = MeanShift(bandwidth=3)

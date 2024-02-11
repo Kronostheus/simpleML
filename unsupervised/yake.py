@@ -1,9 +1,11 @@
-import numpy as np
-from nltk.tokenize import sent_tokenize, word_tokenize
-from nltk.corpus import stopwords
-from string import punctuation
-from copy import deepcopy
 from collections import Counter, OrderedDict
+from copy import deepcopy
+from string import punctuation
+
+import numpy as np
+from nltk.corpus import stopwords
+from nltk.tokenize import sent_tokenize, word_tokenize
+
 from utils import levenshtein_distance
 
 
@@ -20,7 +22,7 @@ class YAKE:
     This implementation follows the algorithm as described in ECIR 2018 paper and official implementation
     (https://github.com/LIAAD/yake) as reference.
     """
-    def __init__(self,
+    def __init__(self,  # noqa: PLR0913 -> algorithm configuration vs. dataclass
                  stoplist=None,
                  reproduce=False,
                  n_grams=(1, 3),
@@ -28,7 +30,7 @@ class YAKE:
                  language='english',
                  threshold=0.8):
 
-        self.stopwords = stopwords.words(language.lower()) if not stoplist else stoplist
+        self.stopwords = stoplist if stoplist else stopwords.words(language.lower())
         self.reproduce = reproduce
         self.window = window
         self.threshold = threshold
@@ -61,10 +63,11 @@ class YAKE:
 
         if self.reproduce:
             # For some reason, YAKE originally removed the letter 's' from every string
+            min_length = 3
             for sentence in sentence_list:
                 for i, word in enumerate(sentence):
                     # Also filter for stopwords, otherwise words such as 'this' would become 'thi' and mess up the stats
-                    if word.endswith('s') and len(word) > 3 and word not in self.stopwords:
+                    if word.endswith('s') and len(word) > min_length and word not in self.stopwords:
                         sentence[i] = word[:-1]
 
         # While the algorithm does give importance to capitalized words, beginning of sentences are not
@@ -77,7 +80,7 @@ class YAKE:
         self.term_frequency = Counter(self.terms)
 
         # Use context window to find left and right contexts for each word
-        self.term_contexts = {word: self._get_contexts(word) for word in self.term_frequency.keys()}
+        self.term_contexts = {word: self._get_contexts(word) for word in self.term_frequency}
 
         # Count number of total sentences
         self.sentence_count = len(self.sentence_list)
@@ -287,15 +290,15 @@ class YAKE:
         weight_prod = 1.0
         weight_sum = 0.0
 
-        for idx, word in enumerate(keyword):
+        for idx, _word in enumerate(keyword):
 
             # Original YAKE algorithm removed the letter 's' from word endings
-            word = self._original_yake_quirk(word)
+            word = self._original_yake_quirk(_word)
 
             if word in self.stopwords:
 
                 # Immediate adjacent words
-                term_left, term_right = [self._original_yake_quirk(kw) for kw in (keyword[idx - 1], keyword[idx + 1])]
+                term_left, term_right = (self._original_yake_quirk(kw) for kw in (keyword[idx - 1], keyword[idx + 1]))
 
                 # Get context windows
                 context_left_term = self.term_contexts[term_left]
@@ -379,7 +382,7 @@ class YAKE:
         """
         if not self.reproduce:
             return word
-        return word if word in self.term_weights.keys() else word[:-1]
+        return word if word in self.term_weights else word[:-1]
 
     @staticmethod
     def _prune_at_punctuation(context):
@@ -469,7 +472,7 @@ class YAKE:
         self._preprocess_text(text)
 
         # Weight individual terms
-        self.term_weights = {word: self._word_weight(word) for word in self.term_frequency.keys()}
+        self.term_weights = {word: self._word_weight(word) for word in self.term_frequency}
 
         keyword_weighting = {'penalize': self._keyword_weight_penalize,
                              'same': self._keyword_weight_same,
@@ -497,12 +500,12 @@ class YAKE:
 
 
 if __name__ == "__main__":
-    text_content = "In this work, we propose a lightweight approach for keyword extraction and ranking based on an " \
-        "unsupervised methodology to select the most important keywords of a single document. To understand " \
-        "the merits of our proposal, we compare it against RAKE, textrank and singlerank methods (three well-known " \
-        "unsupervised approaches) and the baseline tf-idf, over four different collections to illustrate the " \
-        "generality of our approach. The experimental results suggest that extracting keywords from documents using " \
-        "our method results in a superior effectiveness when compared to similar approaches."
+    text_content = ("In this work, we propose a lightweight approach for keyword extraction and ranking based on an "
+        "unsupervised methodology to select the most important keywords of a single document. To understand "
+        "the merits of our proposal, we compare it against RAKE, textrank and singlerank methods (three well-known "
+        "unsupervised approaches) and the baseline tf-idf, over four different collections to illustrate the "
+        "generality of our approach. The experimental results suggest that extracting keywords from documents using "
+        "our method results in a superior effectiveness when compared to similar approaches.")
 
     reproduce_yake = True
 
@@ -512,10 +515,12 @@ if __name__ == "__main__":
     if reproduce_yake:
 
         # Since I do not own stopword list, I won't include it in this project
-        with open('../data/stopwords_en.txt') as f:
+        with open('data/stopwords_en.txt') as f:
             stop_lst = f.read().splitlines()
 
-        assert len(stop_lst) == 575
+        original_stopword_length = 575
+        if len(stop_lst) != original_stopword_length:
+            raise ValueError("Stopword list is different")
 
         yake = YAKE(stoplist=stop_lst, reproduce=reproduce_yake, window=1)
         response = yake.extract_keywords(text_content, stopword_weighting='penalize', num_keywords=50)
@@ -531,23 +536,24 @@ if __name__ == "__main__":
             ('methodology to select', 0.028374), ('well-known unsupervised approaches', 0.046841),
             ('lightweight approach', 0.049308), ('unsupervised methodology', 0.049308), ('single document', 0.064314),
             ('keyword extraction', 0.069818), ('important keywords', 0.069818), ('unsupervised approaches', 0.093349),
-            ('work', 0.127663), ('well-known unsupervised', 0.130814), ('approach', 0.141448), ('unsupervised', 0.141448),
+            ('work', 0.127663), ('well-known unsupervised', 0.130814),
+            ('approach', 0.141448), ('unsupervised', 0.141448),
             ('approaches', 0.150902), ('textrank and singlerank', 0.159825), ('baseline tf-idf', 0.159825),
             ('propose', 0.166106), ('lightweight', 0.166106), ('extraction', 0.166106), ('ranking', 0.166106),
             ('based', 0.166106), ('methodology', 0.166106), ('select', 0.166106), ('important', 0.166106),
             ('single', 0.166106), ('similar approaches', 0.178547), ('rake', 0.181201), ('keywords', 0.196446),
             ('understand the merits', 0.200788), ('collections to illustrate', 0.200788),
             ('illustrate the generality', 0.200788), ('singlerank methods', 0.205429),
-            ('extracting keywords', 0.245673), ('results', 0.251994),
-            ('experimental results suggest', 0.256018), ('method results', 0.265889), ('suggest that extracting', 0.336858),
+            ('extracting keywords', 0.245673), ('results', 0.251994), ('experimental results suggest', 0.256018),
+            ('method results', 0.265889), ('suggest that extracting', 0.336858),
             ('superior effectiveness', 0.336858), ('effectiveness when compared', 0.336858),
             ('compared to similar', 0.336858), ('proposal', 0.336989), ('textrank', 0.336989), ('tf-idf', 0.336989),
             ('experimental results', 0.338667), ('results suggest', 0.338667), ('document', 0.363788),
             ('approach for keyword', 0.387358), ('understand', 0.408918)
         ]
 
-        assert all((keyword.lower(), score) in actual_yake_response for keyword, score in response)
-
+        if not all((keyword.lower(), score) in actual_yake_response for keyword, score in response):
+            raise ValueError("Algorithm changed")
     else:
         yake = YAKE(window=1)
         response = yake.extract_keywords(text_content, num_keywords=10)

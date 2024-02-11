@@ -3,7 +3,6 @@ import numpy as np
 from utils.calculations import minkowski_distance
 
 
-
 class KMeans:
     def __init__(self, k, max_iter=300):
         self.k = k
@@ -74,13 +73,14 @@ class KMeans:
         :param samples: unseen data samples
         :return: cluster labels associated with data samples
         """
-        assert self.centroids
+        if not self.centroids:
+            raise ValueError("Algorithm not fitted yet")
         return self._get_clusters(self.centroids, samples)[1]
 
 
 if __name__ == "__main__":
-    from sklearn.datasets import make_blobs
     import matplotlib.pyplot as plt
+    from sklearn.datasets import make_blobs
     # Generate dataset
     X, y = make_blobs(centers=3, n_samples=500, random_state=1)
 

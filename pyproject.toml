@@ -15,6 +15,15 @@ scipy = "^1.12.0"
 [tool.poetry.group.dev.dependencies]
 scikit-learn = "^1.4.0"
 matplotlib = "^3.8.2"
+ruff = "^0.2.1"
+
+[tool.ruff]
+lint.select = ["E", "F", "I", "B", "W", "N", "UP", "A", "NPY", "PTH", "RET", "SIM", "ARG", "PL", "C90", "S", "C4", "ICN", "ISC", "INP", "PIE", "PYI"]
+lint.ignore = [
+    "PTH123"  #  `open()` should be replaced by `Path.open()`
+]
+line-length = 120
+exclude = ["__init__.py"]
 
 [build-system]
 requires = ["poetry-core"]
