@@ -1,6 +1,5 @@
 import numpy as np
-import matplotlib.pyplot as plt
-from sklearn.datasets import make_classification
+
 
 
 class LogisticRegression:
@@ -65,14 +64,17 @@ class LogisticRegression:
         return np.round(self.activation(Xb.dot(self.weights)))
 
 
-X = np.linspace(-10, 10)
-t = 1.0 / (1.0 + np.exp(-X))
+if __name__ == "__main__":
+    import matplotlib.pyplot as plt
+    from sklearn.datasets import make_classification
+    X = np.linspace(-10, 10)
+    t = 1.0 / (1.0 + np.exp(-X))
 
-X = np.column_stack((X, t))
-y = np.where(X[:, 0] > 0, 1, 0)
+    X = np.column_stack((X, t))
+    y = np.where(X[:, 0] > 0, 1, 0)
 
 
-lr = LogisticRegression(epochs=1000)
-lr.fit(X, y)
-preds = lr.predict(X)
+    lr = LogisticRegression(epochs=1000)
+    lr.fit(X, y)
+    preds = lr.predict(X)
 

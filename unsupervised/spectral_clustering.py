@@ -1,7 +1,5 @@
 import numpy as np
 import scipy as sp
-import matplotlib.pyplot as plt
-from sklearn.datasets import make_moons
 from utils.calculations import minkowski_distance
 from unsupervised.kmeans import KMeans
 
@@ -75,18 +73,19 @@ class Spectral:
         return kmeans.fit(normalized_eig_vecs)
 
 
-# Generate dataset
-X, _ = make_moons(300, noise=0.05)
+if __name__ == "__main__":
+    import matplotlib.pyplot as plt
+    from sklearn.datasets import make_moons
+    # Generate dataset
+    X, _ = make_moons(300, noise=0.05)
 
-spectral = Spectral(n_clusters=2)
-clusters = spectral.fit(X)
+    spectral = Spectral(n_clusters=2)
+    clusters = spectral.fit(X)
 
-group_colors = ['skyblue', 'coral', 'lightgreen']
-colors = [group_colors[j] for j in clusters]
+    group_colors = ['skyblue', 'coral', 'lightgreen']
+    colors = [group_colors[j] for j in clusters]
 
-fig, ax = plt.subplots(figsize=(4, 4))
-ax.scatter(X[:, 0], X[:, 1], color=colors, alpha=0.5)
-ax.set_title('Spectral Clustering')
-fig.show()
-
-breakpoint()
+    fig, ax = plt.subplots(figsize=(4, 4))
+    ax.scatter(X[:, 0], X[:, 1], color=colors, alpha=0.5)
+    ax.set_title('Spectral Clustering')
+    plt.show()

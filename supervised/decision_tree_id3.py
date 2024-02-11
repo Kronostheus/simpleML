@@ -100,34 +100,36 @@ class ID3Tree:
                 # Get next branch based on node feature
                 curr_branch = curr_branch.branches[sample[curr_branch.node]]
         return decisions
+    
+
+if __name__ == "__main__":
 
 
-X = np.array([
-    [0, 0, 0, 0],
-    [0, 0, 0, 1],
-    [1, 0, 0, 0],
-    [2, 1, 0, 0],
-    [2, 2, 1, 0],
-    [2, 2, 1, 1],
-    [1, 2, 1, 1],
-    [0, 1, 0, 0],
-    [0, 2, 1, 0],
-    [2, 1, 1, 0],
-    [0, 1, 1, 1],
-    [1, 1, 0, 1],
-    [1, 0, 1, 0],
-    [2, 1, 0, 1]])
+    X = np.array([
+        [0, 0, 0, 0],
+        [0, 0, 0, 1],
+        [1, 0, 0, 0],
+        [2, 1, 0, 0],
+        [2, 2, 1, 0],
+        [2, 2, 1, 1],
+        [1, 2, 1, 1],
+        [0, 1, 0, 0],
+        [0, 2, 1, 0],
+        [2, 1, 1, 0],
+        [0, 1, 1, 1],
+        [1, 1, 0, 1],
+        [1, 0, 1, 0],
+        [2, 1, 0, 1]])
 
-y = np.array([0, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0])
+    y = np.array([0, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0])
 
-tree = ID3Tree()
-tree.split(X, y)
-preds = tree.predict([
-    [0, 2, 0, 1],   # Sunny, Cool, High, Strong
-    [0, 2, 1, 0],   # Sunny, Cool, Normal, Weak
-    [1, 1, 1, 1],   # Overcast, Mild, Normal, Strong
-    [2, 2, 0, 0],   # Rainy, Cool, High, Weak
-    [2, 0, 1, 1]    # Rainy, Hot, Normal, Strong
-])
-assert preds == [0, 1, 1, 1, 0]
-breakpoint()
+    tree = ID3Tree()
+    tree.split(X, y)
+    preds = tree.predict([
+        [0, 2, 0, 1],   # Sunny, Cool, High, Strong
+        [0, 2, 1, 0],   # Sunny, Cool, Normal, Weak
+        [1, 1, 1, 1],   # Overcast, Mild, Normal, Strong
+        [2, 2, 0, 0],   # Rainy, Cool, High, Weak
+        [2, 0, 1, 1]    # Rainy, Hot, Normal, Strong
+    ])
+    assert preds == [0, 1, 1, 1, 0]

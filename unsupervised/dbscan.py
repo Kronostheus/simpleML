@@ -1,6 +1,5 @@
-import matplotlib.pyplot as plt
 from utils.calculations import minkowski_distance
-from sklearn.datasets import make_moons, make_circles
+
 
 
 class DBSCAN:
@@ -28,7 +27,7 @@ class DBSCAN:
         # Dictionary with corresponding cluster labels of fitted data samples
         self.labels = {i: None for i, _ in enumerate(self.samples)}
 
-        for idx, sample in enumerate(self.samples):
+        for idx, _ in enumerate(self.samples):
 
             # Sample already visited
             if self.labels[idx]:
@@ -88,31 +87,34 @@ class DBSCAN:
                 if i != query_index and minkowski_distance(self.samples[query_index], self.samples[i]) <= self.eps]
 
 
-X, _ = make_moons(300, noise=0.05)
+if __name__ == "__main__":
+    import matplotlib.pyplot as plt
+    from sklearn.datasets import make_moons, make_circles
 
-dbscan = DBSCAN()
-dbscan.fit(X)
-labels = dbscan.predict()
+    
+    X, _ = make_moons(300, noise=0.05)
 
-group_colors = ['lightgreen', 'coral', 'skyblue']
-colors = [group_colors[j] for j in labels]
+    dbscan = DBSCAN()
+    dbscan.fit(X)
+    labels = dbscan.predict()
 
-fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(6.4, 6.4))
-ax1.scatter(X[:, 0], X[:, 1])
-ax2.scatter(X[:, 0], X[:, 1], color=colors)
-plt.show()
+    group_colors = ['lightgreen', 'coral', 'skyblue']
+    colors = [group_colors[j] for j in labels]
 
-Z, _ = make_circles(300, noise=0.05, factor=0.5)
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(6.4, 6.4))
+    ax1.scatter(X[:, 0], X[:, 1])
+    ax2.scatter(X[:, 0], X[:, 1], color=colors)
+    plt.show()
 
-dbscan2 = DBSCAN()
-dbscan2.fit(Z)
-_labels = dbscan2.predict()
+    Z, _ = make_circles(300, noise=0.05, factor=0.5)
 
-colors = [group_colors[j] for j in _labels]
+    dbscan2 = DBSCAN()
+    dbscan2.fit(Z)
+    _labels = dbscan2.predict()
 
-fig2, (ax3, ax4) = plt.subplots(2, 1, figsize=(6.4, 6.4))
-ax3.scatter(Z[:, 0], Z[:, 1])
-ax4.scatter(Z[:, 0], Z[:, 1], color=colors)
-plt.show()
+    colors = [group_colors[j] for j in _labels]
 
-breakpoint()
+    fig2, (ax3, ax4) = plt.subplots(2, 1, figsize=(6.4, 6.4))
+    ax3.scatter(Z[:, 0], Z[:, 1])
+    ax4.scatter(Z[:, 0], Z[:, 1], color=colors)
+    plt.show()

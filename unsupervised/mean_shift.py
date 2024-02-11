@@ -1,6 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
-from sklearn.datasets import make_blobs
 from tqdm import tqdm
 from utils.calculations import minkowski_distance
 
@@ -59,16 +57,20 @@ class MeanShift:
                 for sample in samples]
 
 
-X, _ = make_blobs(centers=3, n_samples=100, random_state=1)
+if __name__ == "__main__":
+    import matplotlib.pyplot as plt
+    from sklearn.datasets import make_blobs
 
-meanshift = MeanShift(bandwidth=3)
-classes = meanshift.fit(X)
+    
+    X, _ = make_blobs(centers=3, n_samples=100, random_state=1)
 
-fig2, ax2 = plt.subplots(figsize=(4, 4))
-ax2.scatter(X[:, 0], X[:, 1], c=classes, cmap='Set3', alpha=0.5)
-ax2.scatter(meanshift.centroids[:, 0], meanshift.centroids[:, 1], color='black', marker='.')
+    meanshift = MeanShift(bandwidth=3)
+    classes = meanshift.fit(X)
 
-ax2.set_xlabel('$x_0$')
-ax2.set_ylabel('$x_1$')
-fig2.show()
-breakpoint()
+    fig2, ax2 = plt.subplots(figsize=(4, 4))
+    ax2.scatter(X[:, 0], X[:, 1], c=classes, cmap='Set3', alpha=0.5)
+    ax2.scatter(meanshift.centroids[:, 0], meanshift.centroids[:, 1], color='black', marker='.')
+
+    ax2.set_xlabel('$x_0$')
+    ax2.set_ylabel('$x_1$')
+    plt.show()
