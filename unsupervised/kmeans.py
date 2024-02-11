@@ -3,7 +3,6 @@ import numpy as np
 from utils.calculations import minkowski_distance
 
 
-
 class KMeans:
     def __init__(self, k, max_iter=300):
         self.k = k
@@ -79,8 +78,8 @@ class KMeans:
 
 
 if __name__ == "__main__":
-    from sklearn.datasets import make_blobs
     import matplotlib.pyplot as plt
+    from sklearn.datasets import make_blobs
     # Generate dataset
     X, y = make_blobs(centers=3, n_samples=500, random_state=1)
 

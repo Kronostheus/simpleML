@@ -1,7 +1,6 @@
 from utils.calculations import minkowski_distance
 
 
-
 class DBSCAN:
     def __init__(self, eps=0.2, min_samples=5):
         self.eps = eps
@@ -89,7 +88,7 @@ class DBSCAN:
 
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
-    from sklearn.datasets import make_moons, make_circles
+    from sklearn.datasets import make_circles, make_moons
 
     
     X, _ = make_moons(300, noise=0.05)

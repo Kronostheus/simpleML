@@ -1,5 +1,6 @@
 import numpy as np
 from tqdm import tqdm
+
 from utils.calculations import minkowski_distance
 
 

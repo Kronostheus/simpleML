@@ -1,9 +1,11 @@
-import numpy as np
-from nltk.tokenize import sent_tokenize, word_tokenize
-from nltk.corpus import stopwords
-from string import punctuation
-from copy import deepcopy
 from collections import Counter, OrderedDict
+from copy import deepcopy
+from string import punctuation
+
+import numpy as np
+from nltk.corpus import stopwords
+from nltk.tokenize import sent_tokenize, word_tokenize
+
 from utils import levenshtein_distance
 
 
@@ -531,15 +533,16 @@ if __name__ == "__main__":
             ('methodology to select', 0.028374), ('well-known unsupervised approaches', 0.046841),
             ('lightweight approach', 0.049308), ('unsupervised methodology', 0.049308), ('single document', 0.064314),
             ('keyword extraction', 0.069818), ('important keywords', 0.069818), ('unsupervised approaches', 0.093349),
-            ('work', 0.127663), ('well-known unsupervised', 0.130814), ('approach', 0.141448), ('unsupervised', 0.141448),
+            ('work', 0.127663), ('well-known unsupervised', 0.130814), 
+            ('approach', 0.141448), ('unsupervised', 0.141448),
             ('approaches', 0.150902), ('textrank and singlerank', 0.159825), ('baseline tf-idf', 0.159825),
             ('propose', 0.166106), ('lightweight', 0.166106), ('extraction', 0.166106), ('ranking', 0.166106),
             ('based', 0.166106), ('methodology', 0.166106), ('select', 0.166106), ('important', 0.166106),
             ('single', 0.166106), ('similar approaches', 0.178547), ('rake', 0.181201), ('keywords', 0.196446),
             ('understand the merits', 0.200788), ('collections to illustrate', 0.200788),
             ('illustrate the generality', 0.200788), ('singlerank methods', 0.205429),
-            ('extracting keywords', 0.245673), ('results', 0.251994),
-            ('experimental results suggest', 0.256018), ('method results', 0.265889), ('suggest that extracting', 0.336858),
+            ('extracting keywords', 0.245673), ('results', 0.251994), ('experimental results suggest', 0.256018),
+            ('method results', 0.265889), ('suggest that extracting', 0.336858),
             ('superior effectiveness', 0.336858), ('effectiveness when compared', 0.336858),
             ('compared to similar', 0.336858), ('proposal', 0.336989), ('textrank', 0.336989), ('tf-idf', 0.336989),
             ('experimental results', 0.338667), ('results suggest', 0.338667), ('document', 0.363788),

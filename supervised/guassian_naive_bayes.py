@@ -1,6 +1,7 @@
-import numpy as np
 import math
 from collections import namedtuple
+
+import numpy as np
 
 param = namedtuple("param", "mean variance")
 

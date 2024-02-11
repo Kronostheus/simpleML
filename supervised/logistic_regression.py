@@ -1,7 +1,6 @@
 import numpy as np
 
 
-
 class LogisticRegression:
     def __init__(self, epochs=1, learning_rate=0.1):
         self.lr = learning_rate

@@ -1,7 +1,6 @@
 import numpy as np
 
 
-
 class PCA:
     """
     Principle Component Analysis (PCA)
@@ -114,8 +113,8 @@ def sklearn_svd_flip(matrix, components):
 
 
 if __name__ == "__main__":
-    from sklearn.decomposition import PCA as SklearnPCA
     from sklearn.datasets import load_iris
+    from sklearn.decomposition import PCA as SklearnPCA
 
     
     X = load_iris().data

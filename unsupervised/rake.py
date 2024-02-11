@@ -1,10 +1,10 @@
 import re
+from collections import Counter, namedtuple
+from itertools import groupby, repeat
+from string import punctuation
+
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
-from string import punctuation
-from itertools import groupby, repeat
-from collections import Counter, namedtuple
-
 
 Candidate = namedtuple('Candidate', 'elements text')
 
@@ -189,14 +189,14 @@ class RAKE:
 if __name__ == "__main__":
     test_text = "Compatibility of systems of linear constraints over the set of natural numbers.\nCriteria of " \
                 "compatibility of a system of linear Diophantine equations, strict inequations, and nonstrict " \
-                "inequations are considered. Upper bounds for components of a minimal set of solutions and algorithms of " \
-                "construction of minimal generating sets of solutions for all types of systems are given. These criteria " \
-                "and the corresponding algorithms for constructing a minimal supporting set of solutions can be used in " \
-                "solving all the considered types of systems and systems of mixed types"
+                "inequations are considered. Upper bounds for components of a minimal set of solutions " \
+                "and algorithms of construction of minimal generating sets of solutions for all types of systems are " \
+                "given. These criteria and the corresponding algorithms for constructing a minimal supporting set of " \
+                "solutions can be used in solving all the considered types of systems and systems of mixed types"
 
     rake = RAKE('english')
     result = rake.extract_keywords(test_text)
 
-    assert result == ['minimal generating sets', 'linear diophantine equations', 'minimal supporting set', 'minimal set',
-                    'linear constraints', 'natural numbers', 'strict inequations', 'nonstrict inequations',
-                    'upper bounds']
+    assert result == ['minimal generating sets', 'linear diophantine equations', 'minimal supporting set', 
+                      'minimal set', 'linear constraints', 'natural numbers', 'strict inequations', 
+                      'nonstrict inequations', 'upper bounds']
