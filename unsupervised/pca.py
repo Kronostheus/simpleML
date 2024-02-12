@@ -5,15 +5,15 @@ class PCA:
     """
     Principle Component Analysis (PCA)
     """
-    def __init__(self, n_components):
-        self.num_components = n_components
-        self.cov_matrix = None
-        self.explained_variance = None
+    def __init__(self: "PCA", n_components: float) -> None:
+        self.num_components: float = n_components
+        self.cov_matrix: np.ndarray = None
+        self.explained_variance: np.ndarray = None
         self.components = None
         self.explained_variance_ratio = None
 
     @staticmethod
-    def _mean_data(x):
+    def _mean_data(x: np.ndarray) -> np.ndarray:
         """
         Center data by subtracting each column with its mean
         :param x: raw data
@@ -22,7 +22,7 @@ class PCA:
 
         return x - np.mean(x, axis=0)
 
-    def fit(self, x):
+    def fit(self: "PCA", x: np.ndarray) -> None:
         """
         Fit the model with data
         :param x: data points
@@ -30,20 +30,23 @@ class PCA:
         """
 
         # Center data as PCA is vulnerable to variance.
-        x = self._mean_data(x)
+        x: np.ndarray = self._mean_data(x)
 
         # Build covariance matrix
         self.cov_matrix = np.cov(x.T)
 
         # There are multiple ways get components, such as np.linalg.svd
+        eig_values: np.ndarray
+        eig_vectors: np.ndarray
         eig_values, eig_vectors = np.linalg.eigh(self.cov_matrix)
 
         # np.linalg.eigh returns everything in ascending
         eig_values, eig_vectors = eig_values[::-1], eig_vectors[:, ::-1]
 
         # Explained variance == eigenvalues, the ratio [0, 1] can be obtained by dividing them by their total sum
-        explained_variance_ratio = eig_values / np.sum(eig_values)
+        explained_variance_ratio: np.ndarray = eig_values / np.sum(eig_values)
 
+        threshold: int
         if 0 < self.num_components < 1:
             # Cumulative sum (np.cumsum) throughout the list, although we could also use a while loop to stop earlier
             threshold = np.flatnonzero(np.cumsum(explained_variance_ratio) >= self.num_components)[0] + 1
@@ -58,7 +61,7 @@ class PCA:
         self.components = eig_vectors[:, :threshold].T
         self.explained_variance_ratio = explained_variance_ratio[:threshold]
 
-    def fit_transform(self, x):
+    def fit_transform(self: "PCA", x: np.ndarray) -> np.ndarray:
         """
         Fit the model with data and apply the dimensionality reduction on it.
 
@@ -72,7 +75,7 @@ class PCA:
         # Dimensionality reduction
         return self.transform(x)
 
-    def transform(self, x):
+    def transform(self: "PCA", x: np.ndarray) -> np.ndarray:
         """
         Apply dimensionality reduction on data.
         Assumes input needs to be centered, but that model has already been fitted.
@@ -81,13 +84,13 @@ class PCA:
         """
 
         # Center data
-        x = self._mean_data(x)
+        x: np.ndarray = self._mean_data(x)
 
         # Dimensionality reduction using principal components
         return np.dot(self.components, x.T).transpose()
 
 
-def sklearn_svd_flip(matrix, components):
+def sklearn_svd_flip(matrix: np.ndarray, components: int) -> np.ndarray:
     """
     Sklearn pulled a sneaky and returns different components than my implementation.
     After some digging, I found that while both should be mathematically correct, sklearn flips eigenvectors' sign
@@ -100,12 +103,13 @@ def sklearn_svd_flip(matrix, components):
     """
 
     # This is how the eigenvectors and eigenvalues are computed in my implementation
+    eig_vectors: np.ndarray
     _, eig_vectors = np.linalg.eigh(matrix)
     eig_vectors = eig_vectors[:, ::-1]
 
     # The eigenvector flip is done in these next lines
-    max_abs_cols = np.argmax(np.abs(eig_vectors), axis=0)
-    signs = np.sign(eig_vectors[max_abs_cols, range(eig_vectors.shape[1])])
+    max_abs_cols: np.ndarray = np.argmax(np.abs(eig_vectors), axis=0)
+    signs: np.ndarray = np.sign(eig_vectors[max_abs_cols, range(eig_vectors.shape[1])])
     eig_vectors *= signs
 
     # Return same number of vectors/components

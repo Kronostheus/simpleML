@@ -10,12 +10,12 @@ class Param(NamedTuple):
 
 
 class GaussianNB:
-    def __init__(self):
-        self.parameters = None
-        self.classes = None
+    def __init__(self: "GaussianNB") -> None:
+        self.parameters: dict[int, list[Param]] = None
+        self.classes: np.ndarray = None
         self.class_priors = None
 
-    def fit(self, features, labels):
+    def fit(self: "GaussianNB", features: np.ndarray, labels: np.ndarray) -> None:
         """
         Initializes parameters:
         Class labels;
@@ -27,31 +27,34 @@ class GaussianNB:
         """
 
         # Save class label array
-        self.classes = np.unique(labels)
+        self.classes: np.ndarray = np.unique(labels)
 
         # Save P(c) for every class c
-        self.class_priors = {c: np.mean(labels == c) for c in self.classes}
+        self.class_priors: dict[int, float] = {c: np.mean(labels == c) for c in self.classes}
 
         # Save mean and variance of features (columns) attending to their label/class
-        self.parameters = {c: [Param(np.mean(Xc), np.var(Xc))
-                               for Xc in features[np.where(labels == c)].T]
-                           for c in self.classes}
+        self.parameters: dict[int, list[Param]] = {
+            c: [Param(np.mean(Xc), np.var(Xc)) for Xc in features[np.where(labels == c)].T]
+            for c in self.classes
+        }
 
     @staticmethod
-    def conditional_probability(x, parameter):
+    def conditional_probability(feature: float, parameter: Param) -> float:
         """
         Computes likelihood assuming a Gaussian (normal) distribution of each class.
-        :param x: feature value
+        :param feature: feature value
         :param parameter: parameter tuple associated with feature and class
         :return: probability distribution of x given class c -> P(x|c)
         """
         if parameter.variance == 0:
             raise ZeroDivisionError("Variance is Zero")
-        numerator = math.exp(-((x - parameter.mean) ** 2) / (2 * parameter.variance))
-        denominator = math.sqrt(2 * math.pi * parameter.variance)
+
+        numerator: float = math.exp(-((feature - parameter.mean) ** 2) / (2 * parameter.variance))
+        denominator: float = math.sqrt(2 * math.pi * parameter.variance)
+
         return numerator / denominator
 
-    def predict(self, features):
+    def predict(self: "GaussianNB", features: np.ndarray) -> list[int]:
         """
         Computes the labels for unseen data using a joint probability model classifier, leveraging the chain rule:
             P(C, x1, ..., xn) = P(C) * P(x1|C) * ... * P(xn|C)
@@ -78,9 +81,9 @@ class GaussianNB:
 
 
 if __name__ == "__main__":
-    X = np.array([[-1, -1], [-2, -1], [-3, -2], [1, 1], [2, 1], [3, 2]])
-    y = np.array([1, 1, 1, 2, 2, 2])
+    X: np.ndarray = np.array([[-1, -1], [-2, -1], [-3, -2], [1, 1], [2, 1], [3, 2]])
+    y: np.ndarray = np.array([1, 1, 1, 2, 2, 2])
 
-    gnb = GaussianNB()
+    gnb: GaussianNB = GaussianNB()
     gnb.fit(X, y)
-    y_pred = gnb.predict(np.array([[-0.8, -1]]))
+    y_pred: list[int] = gnb.predict(np.array([[-0.8, -1]]))

@@ -6,34 +6,44 @@ from utils.calculations import minkowski_distance
 
 
 class Spectral:
-    def __init__(self, n_clusters, neighbor=7):
-        self.k = n_clusters
-        self.kth_neighbor = neighbor - 1
-        self.samples = None
-        self.samples_len = None
+    def __init__(self: "Spectral", n_clusters: int, neighbor: int = 7) -> None:
+        self.k: int = n_clusters
+        self.kth_neighbor: int = neighbor - 1
+        self.samples: np.ndarray = None
+        self.samples_len: int = None
 
-    def _precompute_neighbors(self):
+    def _precompute_neighbors(self: "Spectral") -> list[float]:
         """
         For all samples compute the mean of the distances between it and its K nearest neighbors,
          using Euclidean distance. This is equivalent to the sigma for that sample, to be used in the affinity function.
         :return: List of sigmas
         """
-        return [np.mean(np.sort([minkowski_distance(sample, other, p=2)
-                                 for other in self.samples if not np.array_equal(sample, other)])[:self.kth_neighbor])
-                for sample in self.samples]
+        return [
+            np.mean(
+                np.sort([
+                    minkowski_distance(sample, other, p=2)
+                    for other in self.samples if not np.array_equal(sample, other)
+                ])[:self.kth_neighbor]
+            )
+            for sample in self.samples
+        ]
 
-    def _affinity_matrix(self):
+    def _affinity_matrix(self: "Spectral") -> np.ndarray:
         """
         Compute affinity matrix, using Local Scaling self-tuning of the scaling parameters
         :return: Affinity Matrix
         """
         # Scaling parameters. Sigma of sample i is the mean of the distances to the K-nearest neighbors.
-        scaling_dict = self._precompute_neighbors()
+        scaling_dict: list[float] = self._precompute_neighbors()
 
         # Diagonal of affinity matrix is 0
-        affinity_matrix = np.zeros(shape=(self.samples_len, self.samples_len))
+        affinity_matrix: np.ndarray = np.zeros(shape=(self.samples_len, self.samples_len))
 
         # Distance function used is the Euclidean Distance (Minkowski with p=2)
+        i: int
+        j: int
+        sample_i: np.ndarray
+        sample_j: np.ndarray
         for i, sample_i in enumerate(self.samples):
             for j, sample_j in enumerate(self.samples):
                 if i != j:
@@ -44,7 +54,7 @@ class Spectral:
 
         return affinity_matrix
 
-    def fit(self, samples):
+    def fit(self: "Spectral", samples: np.ndarray) -> list[int]:
         """
         Apply Spectral Clustering algorithm as described in Ng et al. 2002
         Affinity matrix calculated with scaling parameter as described in Zelnik-Manor et al. 2005
@@ -56,22 +66,23 @@ class Spectral:
         self.samples_len = len(samples)
 
         # Compute affinity matrix (A)
-        affinity = self._affinity_matrix()
+        affinity: np.ndarray = self._affinity_matrix()
 
         # Square root of diagonal matrix (D) composed of the sum of each of A's rows => D^1/2
-        d = np.diag(np.power(np.sum(affinity, axis=0), -1/2))
+        d: np.ndarray = np.diag(np.power(np.sum(affinity, axis=0), -1/2))
 
         # Compute laplacian matrix (L) using formula L = D^1/2 . A . D^1/2
-        laplacian = d @ affinity @ d
+        laplacian: np.ndarray = d @ affinity @ d
 
-        # Eigenvectors of L stacked as a matrix (X)
+        # Eigenvectors of L stacked as a matrix (X) -> pretty sure I had to look this up
+        eig_vecs: np.ndarray
         _, eig_vecs = sp.sparse.linalg.eigs(laplacian, k=self.k)
 
         # Normalize X using formula X / sum(X^2)^1/2 which gives us a data sample representation (Y)
-        normalized_eig_vecs = eig_vecs / np.linalg.norm(eig_vecs, axis=1, keepdims=True)
+        normalized_eig_vecs: np.ndarray = eig_vecs / np.linalg.norm(eig_vecs, axis=1, keepdims=True)
 
         # Fit a KMeans algorithm to Y and receive cluster labels
-        kmeans = KMeans(k=self.k)
+        kmeans: KMeans = KMeans(k=self.k)
 
         return kmeans.fit(normalized_eig_vecs)
 
