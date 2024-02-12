@@ -2,11 +2,11 @@ import numpy as np
 
 
 class LinearRegression:
-    def __init__(self):
-        self.b1 = None
-        self.b0 = None
+    def __init__(self: "LinearRegression") -> None:
+        self.b1: float = None
+        self.b0: float = None
 
-    def fit(self, x, y):
+    def fit(self: "LinearRegression", x: np.ndarray, y: np.ndarray) -> None:
         """
         Calculate parameters for linear function y = mx + b
         b1 -> m
@@ -22,7 +22,7 @@ class LinearRegression:
         # Intercept is mean(y) - coefficient * mean(x)
         self.b0 = np.mean(y, axis=0) - self.b1 * np.mean(x, axis=0)
 
-    def predict(self, x):
+    def predict(self: "LinearRegression", x: np.ndarray) -> list[float]:
         """
         Predicts y based on y = mx + b
         m -> coefficient/slope
@@ -38,14 +38,17 @@ if __name__ == "__main__":
     import matplotlib.pyplot as plt
     from sklearn.datasets import make_regression
 
+    X: np.ndarray
+    y: np.ndarray
+    coef: np.ndarray
 
     X, y, coef = make_regression(n_samples=300, n_features=1, n_informative=1, noise=10, coef=True, random_state=0)
 
-    lr = LinearRegression()
+    lr: LinearRegression = LinearRegression()
     lr.fit(X, y)
 
-    x_line = np.arange(X.min(), X.max())
-    y_line = lr.predict(x_line)
+    x_line: np.ndarray = np.arange(X.min(), X.max())
+    y_line: np.ndarray = lr.predict(x_line)
 
     fig, ax = plt.subplots(figsize=(4, 4))
 
