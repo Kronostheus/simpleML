@@ -2,10 +2,10 @@ import numpy as np
 
 
 class ID3Tree:
-    def __init__(self):
-        self.node: int = -1
-        self.decision: int = -1
-        self.branches: dict[int, ID3Tree] = {}
+    def __init__(self: "ID3Tree") -> None:
+        self.node: int = None
+        self.decision: int = None
+        self.branches: dict[int, ID3Tree] = None
 
     @staticmethod
     def get_probability(data: np.ndarray) -> np.ndarray:
