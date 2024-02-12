@@ -1,15 +1,17 @@
+import numpy as np
+
 from utils.calculations import minkowski_distance
 
 
 class DBSCAN:
-    def __init__(self, eps=0.2, min_samples=5):
-        self.eps = eps
-        self.min_samples = min_samples
-        self.labels = None
-        self.cluster_counter = 0
-        self.samples = None
+    def __init__(self: "DBSCAN", eps: float = 0.2, min_samples: int = 5) -> None:
+        self.eps: float = eps
+        self.min_samples: int = min_samples
+        self.labels: dict[int, int] = None
+        self.cluster_counter: int = 0
+        self.samples: int = None
 
-    def fit(self, samples):
+    def fit(self: "DBSCAN", samples: np.ndarray) -> None:
         """
         Fits data samples to object
         :param samples: data samples
@@ -17,7 +19,7 @@ class DBSCAN:
         """
         self.samples = samples
 
-    def predict(self):
+    def predict(self: "DBSCAN") -> list[int]:
         """
         Run DBSCAN algorithm
         :return: cluster labels
@@ -26,6 +28,7 @@ class DBSCAN:
         # Dictionary with corresponding cluster labels of fitted data samples
         self.labels = {i: None for i, _ in enumerate(self.samples)}
 
+        idx: int
         for idx, _ in enumerate(self.samples):
 
             # Sample already visited
@@ -33,7 +36,7 @@ class DBSCAN:
                 continue
 
             # Find neighbors
-            neighbors = self.range_query(idx)
+            neighbors: list[int] = self.range_query(idx)
 
             # A point without sufficient neighbors is an outlier and marked as Noise (-1)
             if len(neighbors) >= self.min_samples:
@@ -45,7 +48,7 @@ class DBSCAN:
 
         return list(self.labels.values())
 
-    def expand(self, sample_index, sample_neighbors):
+    def expand(self: "DBSCAN", sample_index: int, sample_neighbors: list[int]) -> None:
         """
         Expand a cluster by iterating through a point's neighbors
         :param sample_index: focus point
@@ -57,10 +60,12 @@ class DBSCAN:
             self.labels[sample_index] = self.cluster_counter
 
         # Iterate through each neighbor
+        n_index: int
+        nb: int
         for n_index in sample_neighbors:
 
             # Get neighbors of neighbor
-            new_neighbors = self.range_query(n_index)
+            new_neighbors: list[int] = self.range_query(n_index)
 
             # Check if neighbor has enough neighbors (expanded neighbors)
             if len(new_neighbors) >= self.min_samples:
@@ -76,7 +81,7 @@ class DBSCAN:
                         # Attribute cluster
                         self.labels[nb] = self.cluster_counter
 
-    def range_query(self, query_index):
+    def range_query(self: "DBSCAN", query_index: int) -> list[int]:
         """
         Use euclidean distance to return all neighbors of a point (query_index) that are within a certain proximity.
         :param query_index: focus point
