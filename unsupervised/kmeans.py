@@ -4,12 +4,12 @@ from utils.calculations import minkowski_distance
 
 
 class KMeans:
-    def __init__(self, k, max_iter=300):
-        self.k = k
-        self.max_iter = max_iter
-        self.centroids = None
+    def __init__(self: "KMeans", k: int, max_iter: int = 300) -> None:
+        self.k: int = k
+        self.max_iter: int = max_iter
+        self.centroids: np.ndarray = None
 
-    def _get_clusters(self, centroids, samples):
+    def _get_clusters(self: "KMeans", centroids: np.ndarray, samples: np.ndarray) -> tuple[list[float], list[int]]:
         """
         Based on current centroids, assign a cluster to each data sample and recalculate centroids based on new clusters
         :param centroids: current centroids
@@ -17,12 +17,13 @@ class KMeans:
         :return: new centroids and cluster labels
         """
 
-        clusters = [[] for _ in range(self.k)]
-        labels = []
+        clusters: list[list[np.ndarray]] = [[] for _ in range(self.k)]
+        labels: list[int] = []
 
+        sample: np.ndarray
         for sample in samples:
             # Pairwise distance between sample and all current centroids
-            closest = np.argmin([minkowski_distance(centroid, sample, p=2) for centroid in centroids])
+            closest: int = np.argmin([minkowski_distance(centroid, sample, p=2) for centroid in centroids])
 
             # Place sample into respective cluster
             clusters[int(closest)].append(sample)
@@ -32,7 +33,7 @@ class KMeans:
 
         return self._get_centroids(clusters), labels
 
-    def _get_centroids(self, clusters):
+    def _get_centroids(self: "KMeans", clusters: np.ndarray) -> list[float]:
         """
         Get centroids of each cluster by computing their respective mean
         :param clusters: current clusters
@@ -40,22 +41,24 @@ class KMeans:
         """
         return [np.array(c).mean(axis=0) for c in clusters]
 
-    def fit(self, samples):
+    def fit(self: "KMeans", samples: np.ndarray) -> list[int]:
         """
         Run K-Means Algorithm on data samples in order to partition them into K clusters
         :param samples: data samples to partition
         :return: cluster labels assigned to data samples
         """
 
-        labels = None
+        labels: list[int] = []
 
         # Initialize clusters using Random Partition method; data split into k clusters and centroids are computed
-        centroids = self._get_centroids(np.array_split(samples, self.k))
+        centroids: list[float] = self._get_centroids(np.array_split(samples, self.k))
 
         for _ in range(self.max_iter):
-            prev_centroids = centroids
+            prev_centroids: list[float] = centroids
 
             # Update step
+            centroids: list[float]
+            labels: list[int]
             centroids, labels = self._get_clusters(centroids, samples)
 
             # Check if centroids changed, stop if they are equal
@@ -66,7 +69,7 @@ class KMeans:
 
         return labels
 
-    def predict(self, samples):
+    def predict(self: "KMeans", samples: np.ndarray) ->  list[int]:
         """
         Predicts unseen data samples by simply assigning the cluster label of the closest centroid.
         Does not alter clusters.
