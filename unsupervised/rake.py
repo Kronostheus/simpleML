@@ -2,7 +2,7 @@ import re
 from collections import Counter
 from itertools import groupby, repeat
 from string import punctuation
-from typing import NamedTuple
+from typing import NamedTuple, Optional
 
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
@@ -20,18 +20,25 @@ class RAKE:
     Originally described in "Automatic Keyword Extraction from Individual Documents"
     by Stuart Rose, Dave Engel, Nick Cramer and Wendy Cowley (2010).
     """
-    def __init__(self, language='english', min_length=1, max_length=4, num_keywords=None):
-        self.language = language
-        self.max_length = max_length
-        self.min_length = min_length
-        self.num_keywords = num_keywords
-        self.stopwords = stopwords.words(language.lower())
+    def __init__(
+            self: "RAKE",
+            language: str = 'english',
+            min_length: int = 1,
+            max_length: int = 4,
+            num_keywords: Optional[int] = None
+        ) -> None:
 
-        self.word_frequency = None
-        self.word_degree = None
-        self.ratio = None
+        self.language: str = language
+        self.max_length: int = max_length
+        self.min_length: int = min_length
+        self.num_keywords: int = num_keywords
+        self.stopwords: list[str] = stopwords.words(language.lower())
 
-    def extract_keywords(self, text):
+        self.word_frequency: Counter = None
+        self.word_degree: dict[str, int] = None
+        self.ratio: dict[str, float] = None
+
+    def extract_keywords(self: "RAKE", text: str) -> list[str]:
         """
         Public method to run RAKE algorithm on given text.
 
@@ -46,7 +53,7 @@ class RAKE:
         self._keyword_scores(candidates)
         return self._rank_keyword_scores(candidates)
 
-    def _generate_candidate_keywords(self, text):
+    def _generate_candidate_keywords(self: "RAKE", text: str) -> list[Candidate]:
         """
         # 1.2.1 Candidate keywords
 
@@ -59,17 +66,17 @@ class RAKE:
         """
 
         # Reduce text into list of words
-        word_list = word_tokenize(text.lower(), language=self.language)
+        word_list: list[str] = word_tokenize(text.lower(), language=self.language)
 
         # Split list of words based on delimiters (punctuation or stopwords), returning list of lists of relevant words
-        split_on_punctuation = [
+        split_on_punctuation: list[list[str]] = [
             list(word_group)
             for is_delimiter, word_group in groupby(word_list, lambda x: x in self.stopwords + list(punctuation))
             if not is_delimiter
         ]
 
         # Break candidates that exceed max amount of keywords into smaller ones, left-to-right (Note: not in paper)
-        split_on_max = [
+        split_on_max: list[list[str]] = [
             reduced_candidate
             for candidate in split_on_punctuation
             for reduced_candidate in [candidate[i:i + self.max_length]
@@ -77,10 +84,10 @@ class RAKE:
             ]
 
         # Generate candidates that might have interior stopwords but are important (appear multiple times) nonetheless
-        adjoined_candidates = self._adjoining_keywords(split_on_max, text.lower())
+        adjoined_candidates: list[Candidate] = self._adjoining_keywords(split_on_max, text.lower())
 
         # Remove candidates that do not have minimum amount of keywords
-        candidates = [
+        candidates: list[Candidate] = [
             Candidate(candidate, ' '.join(candidate))
             for candidate in split_on_max
             if len(candidate) >= self.min_length
@@ -91,7 +98,7 @@ class RAKE:
 
         return candidates
 
-    def _keyword_scores(self, candidates):
+    def _keyword_scores(self: "RAKE", candidates: list[Candidate]) -> dict[str, float]:
         """
         # 1.2.2 Keyword scores
 
@@ -108,17 +115,19 @@ class RAKE:
         self.word_frequency = Counter(word for phrase in candidates for word in phrase.elements)
 
         # Dictionary<word: int(degree)> -> Sum of co-occurrences, including to itself
-        self.degree = dict(zip(self.word_frequency.keys(), repeat(0)))
+        self.word_degree = dict(zip(self.word_frequency.keys(), repeat(0)))
 
+        candidate: Candidate
+        word: str
         for candidate in candidates:
             # This is equivalent of computing the co-occurrence matrix and immediately summing values
             for word in candidate.elements:
-                self.degree[word] += len(candidate.elements)
+                self.word_degree[word] += len(candidate.elements)
 
         # Dictionary<word: float(ratio)> -> Divide each word's degree by its frequency
-        self.ratio = {word: self.degree[word] / freq for word, freq in self.word_frequency.items()}
+        self.ratio = {word: self.word_degree[word] / freq for word, freq in self.word_frequency.items()}
 
-    def _adjoining_keywords(self, keywords, original_text):
+    def _adjoining_keywords(self: "RAKE", keywords: list[str], original_text: str) -> list[Candidate]:
         """
         # 1.2.3 Adjoining keywords
 
@@ -138,23 +147,29 @@ class RAKE:
         adjoining = []
 
         # Sliding window on pairs of keywords
+        _former: str
+        _latter: str
         for _former, _latter in zip(keywords, keywords[1:]):
 
             # Total keywords if both elements are joined
-            total_keywords = len(_former) + len(_latter)
+            total_keywords: int = len(_former) + len(_latter)
 
             # Final keyword amount must not exceed the maximum or be lower than the minimum allowed
             if total_keywords > self.max_length or total_keywords < self.min_length:
                 continue
 
             # Join elements in string form (they have not been converted to Candidate yet)
+            former: str
+            latter: str
             former, latter = (" ".join(keywords) for keywords in (_former, _latter))
 
             # Find potential interior stopwords (this has the possibility of finding weird matches as well)
-            all_matches = re.findall(rf'{former}([\w\s]+?){latter}', original_text)
+            all_matches: list[Optional[str]] = re.findall(rf'{former}([\w\s]+?){latter}', original_text)
 
             # Ensure that matches are exclusively stopwords
-            filter_matches = [match for match in all_matches if set(word_tokenize(match)).issubset(rake.stopwords)]
+            filter_matches: list[str] = [
+                match for match in all_matches if set(word_tokenize(match)).issubset(rake.stopwords)
+            ]
 
             # The connecting stopwords must be found in the text at least twice
             if len(filter_matches) > 1:
@@ -166,7 +181,7 @@ class RAKE:
 
         return adjoining
 
-    def _rank_keyword_scores(self, candidates):
+    def _rank_keyword_scores(self: "RAKE", candidates: list[Candidate]) -> list[str]:
         """
         Compute score for entire candidate, i.e. sum score of individual keywords contained in the candidate.
         Only returns specified number of candidates:
@@ -178,16 +193,19 @@ class RAKE:
         """
 
         # Candidate score = sum of candidate's keyword scores
-        candidate_scores = {candidate.text: sum(self.ratio[word]
-                                                for word in candidate.elements if word not in self.stopwords)
-                            for candidate in candidates}
+        candidate_scores: dict[str, float] = {
+            candidate.text: sum(self.ratio[word] for word in candidate.elements if word not in self.stopwords)
+            for candidate in candidates
+        }
 
         # Sort candidates in decreasing order of score
-        sorted_candidate_keywords = sorted(candidate_scores, key=candidate_scores.get, reverse=True)
+        sorted_candidate_keywords: dict[str, float] = sorted(candidate_scores, key=candidate_scores.get, reverse=True)
 
         # Only return specified amount of candidates
-        return sorted_candidate_keywords[:self.num_keywords] if self.num_keywords\
-            else sorted_candidate_keywords[:round(len(candidate_scores)/3)]
+        if self.num_keywords:
+            return sorted_candidate_keywords[:self.num_keywords]
+
+        return sorted_candidate_keywords[:round(len(candidate_scores)/3)]
 
 
 if __name__ == "__main__":
