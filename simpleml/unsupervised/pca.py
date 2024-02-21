@@ -5,6 +5,7 @@ class PCA:
     """
     Principle Component Analysis (PCA)
     """
+
     def __init__(self: "PCA", n_components: float) -> None:
         self.num_components: float = n_components
         self.cov_matrix: np.ndarray = None
@@ -120,7 +121,6 @@ if __name__ == "__main__":
     from sklearn.datasets import load_iris
     from sklearn.decomposition import PCA as SklearnPCA  # noqa: N811 -> PCA not constant
 
-
     X = load_iris().data
     n_comp = 2
 
@@ -137,4 +137,3 @@ if __name__ == "__main__":
         and np.allclose(sklearn_svd_flip(pca.cov_matrix, n_comp), sklearn_pca.components_)
     ):
         raise Exception("Algorithms do not match")
-

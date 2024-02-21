@@ -73,8 +73,6 @@ if __name__ == "__main__":
     features: np.ndarray = np.column_stack((features, t))
     y: np.ndarray = np.where(features[:, 0] > 0, 1, 0)
 
-
     lr: LogisticRegression = LogisticRegression(epochs=1000)
     lr.fit(features, y)
     preds: np.ndarray = lr.predict(features)
-

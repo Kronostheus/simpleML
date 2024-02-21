@@ -1,10 +1,9 @@
 import numpy as np
-
 from utils.calculations import minkowski_distance
 
 
 class KNN:
-    def __init__(self: "KNN", k: int, p: int=2) -> None:
+    def __init__(self: "KNN", k: int, p: int = 2) -> None:
         self.k: int = k
         self.p: int = p
         self.features: np.ndarray = None
@@ -37,7 +36,7 @@ class KNN:
             distances: list[float] = [minkowski_distance(sample, train_i, p=self.p) for train_i in self.X_train]
 
             # Compute the k-nearest neighbors according to previously calculated distances
-            closest: list[int] = [self.y_train[idx] for idx in np.argsort(distances)[:self.k]]
+            closest: list[int] = [self.y_train[idx] for idx in np.argsort(distances)[: self.k]]
 
             # Attribute the label of the test sample according to the most common label of its neighbors
             y_pred.append(np.argmax(np.bincount(closest)))

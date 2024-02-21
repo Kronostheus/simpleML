@@ -1,13 +1,13 @@
 from collections import Counter, OrderedDict
+from collections.abc import Callable
 from copy import deepcopy
 from string import punctuation
-from typing import Callable, Optional
 
 import numpy as np
 from nltk.corpus import stopwords
 from nltk.tokenize import sent_tokenize, word_tokenize
 
-from utils import levenshtein_distance
+from simpleml.utils import levenshtein_distance
 
 
 class YAKE:
@@ -23,13 +23,16 @@ class YAKE:
     This implementation follows the algorithm as described in ECIR 2018 paper and official implementation
     (https://github.com/LIAAD/yake) as reference.
     """
-    def __init__(self: "YAKE",  # noqa: PLR0913 -> algorithm configuration vs. dataclass
-                 stoplist: Optional[list[str]] = None,
-                 reproduce: bool = False,
-                 n_grams: tuple[int, int] = (1, 3),
-                 window: int = 1,
-                 language: str = 'english',
-                 threshold: float = 0.8) -> None:
+
+    def __init__(  # noqa: PLR0913 -> algorithm configuration vs. dataclass
+        self: "YAKE",
+        stoplist: list[str] | None = None,
+        reproduce: bool = False,
+        n_grams: tuple[int, int] = (1, 3),
+        window: int = 1,
+        language: str = "english",
+        threshold: float = 0.8,
+    ) -> None:
 
         self.stopwords: list[str] = stoplist if stoplist else stopwords.words(language.lower())
         self.reproduce: bool = reproduce
@@ -65,7 +68,7 @@ class YAKE:
         # Tokenize each sentence into words, organized in a list of lists.
         # <punct> is used to avoid generating n_grams that crossed punctuation marks.
         sentence_list: list[list[str]] = [
-            [word if word not in punctuation else '<punct>' for word in word_tokenize(sentence)]
+            [word if word not in punctuation else "<punct>" for word in word_tokenize(sentence)]
             for sentence in sent_tokenize(text)
         ]
 
@@ -82,14 +85,14 @@ class YAKE:
                 word: str
                 for i, word in enumerate(sentence):
                     # Also filter for stopwords, otherwise words such as 'this' would become 'thi' and mess up the stats
-                    if word.endswith('s') and len(word) > min_length and word not in self.stopwords:
+                    if word.endswith("s") and len(word) > min_length and word not in self.stopwords:
                         sentence[i] = word[:-1]
 
         # While the algorithm does give importance to capitalized words, beginning of sentences are not
         self.sentence_list = self._remove_starting_capitalization(sentence_list)
 
         # Complete list of all words in the text
-        self.terms = [word for sentence in self.sentence_list for word in sentence if word != '<punct>']
+        self.terms = [word for sentence in self.sentence_list for word in sentence if word != "<punct>"]
 
         # Term Frequency (TF) is the amount of times a term occurs within the text
         self.term_frequency = Counter(self.terms)
@@ -104,12 +107,14 @@ class YAKE:
         self.max_term_frequency = np.max(list(self.term_frequency.values()))
 
         # Mean of frequencies (MeanTF), which although not mentioned in the paper, does not consider stopword TFs
-        self.mean_term_frequency = np.mean([count for word, count in self.term_frequency.items()
-                                            if word not in self.stopwords])
+        self.mean_term_frequency = np.mean(
+            [count for word, count in self.term_frequency.items() if word not in self.stopwords]
+        )
 
         # Standard Deviation of frequencies (stdTF), as with MeanTF, does not consider stopword TFs
-        self.std_term_frequency = np.std([count for word, count in self.term_frequency.items()
-                                          if word not in self.stopwords])
+        self.std_term_frequency = np.std(
+            [count for word, count in self.term_frequency.items() if word not in self.stopwords]
+        )
 
         # Neat little trick to gather up all valid keywords according to n_gram sizes (defaults to {1,2,3}-grams)
         # Valid keywords at this stage must not start or end with stopwords, nor have punctuation mark within them
@@ -118,7 +123,7 @@ class YAKE:
             for sentence in original_sentences
             for step in range(self.n_grams[0], self.n_grams[1] + 1)
             for n_grams in self._generate_n_grams(sentence, step)
-            if n_grams[0] not in self.stopwords and n_grams[-1] not in self.stopwords and '<punct>' not in n_grams
+            if n_grams[0] not in self.stopwords and n_grams[-1] not in self.stopwords and "<punct>" not in n_grams
         ]
 
         # Similar to term frequencies, keyword frequencies are the amount of times a keyword has occurred
@@ -146,10 +151,9 @@ class YAKE:
             tmp_word: str = word.lower()
 
             # Equation (1) -> max[TF(U(w)), TF(A(w))] / (1 + log(TF(w)))
-            score: float = max(
-                self.term_frequency[tmp_word.title()],
-                self.term_frequency[tmp_word.upper()]
-            ) / (1.0 + np.log(self.term_frequency[word]))
+            score: float = max(self.term_frequency[tmp_word.title()], self.term_frequency[tmp_word.upper()]) / (
+                1.0 + np.log(self.term_frequency[word])
+            )
         return score
 
     def _score_position(self: "YAKE", word: str) -> float:
@@ -169,9 +173,7 @@ class YAKE:
 
         # Equation (2) -> log(log(3 + median(Sen_w))), where Sen_w is index of the sentence where word occurs
         return np.log(
-            np.log(
-                3 + np.median([idx for idx, sentence in enumerate(self.sentence_list) if word in sentence])
-            )
+            np.log(3 + np.median([idx for idx, sentence in enumerate(self.sentence_list) if word in sentence]))
         )
 
     def _score_frequency(self: "YAKE", word: str) -> float:
@@ -249,11 +251,9 @@ class YAKE:
         rel: float = self._score_relatedness(word)
 
         # Equation (6) -> WREL * WPOS / [WCASE + (WFREQ / WREL) + (WSENT / WFREQ)]
-        return (rel * self._score_position(word)) / sum([
-            self._score_casing(word),
-            (self._score_frequency(word) / rel),
-            (self._score_sentences(word) / rel)
-        ])
+        return (rel * self._score_position(word)) / sum(
+            [self._score_casing(word), (self._score_frequency(word) / rel), (self._score_sentences(word) / rel)]
+        )
 
     def _keyword_weight_none(self: "YAKE", keyword: list[str]) -> float:
         """
@@ -286,8 +286,9 @@ class YAKE:
         """
 
         # Equation (7) -> prod(S(w)) / [TF(w) * (1 + sum(S(w)))]
-        return np.prod([self.term_weights[word] for word in keyword])\
-               / (self.keyword_frequency[" ".join(keyword)] * (1 + sum([self.term_weights[word] for word in keyword])))
+        return np.prod([self.term_weights[word] for word in keyword]) / (
+            self.keyword_frequency[" ".join(keyword)] * (1 + sum([self.term_weights[word] for word in keyword]))
+        )
 
     def _keyword_weight_penalize(self: "YAKE", keyword: list[str]) -> float:
         """
@@ -337,11 +338,11 @@ class YAKE:
                 prob: float = prob_left * prob_right
 
                 # Technically (1 + (1 - prob)) as the added stopword weight on the keyword product
-                weight_prod *= (2 - prob)
+                weight_prod *= 2 - prob
 
                 # Not sure if this should be increment (we want to minimize S(w) for better keywords), or if we are
                 # actively penalizing compensating for the product
-                weight_sum -= (1 - prob)
+                weight_sum -= 1 - prob
             else:
                 # If word is not a stopword, then business as usual
                 weight_prod *= self.term_weights[word]
@@ -382,11 +383,12 @@ class YAKE:
             word_indices: list[int] = [idx for idx, tmp in enumerate(sentence) if word == tmp]
 
             # Get adjacent left context according to window size
-            left_context.extend(sentence[max(0, lidx - self.window): lidx] for lidx in word_indices)
+            left_context.extend(sentence[max(0, lidx - self.window) : lidx] for lidx in word_indices)
 
             # Get adjacent right context according to window size
             right_context.extend(
-                sentence[ridx + 1: ridx + self.window + 1] for ridx in word_indices if ridx < len(sentence) - 1)
+                sentence[ridx + 1 : ridx + self.window + 1] for ridx in word_indices if ridx < len(sentence) - 1
+            )
 
         clean_left: list[str]
         clean_right: list[str]
@@ -395,11 +397,11 @@ class YAKE:
         # Only keep context words up to the first punctuation mark (by reversing left_context we can use same method)
         l_context: str
         for l_context in left_context:
-            clean_left.extend(self._prune_at_punctuation(l_context[::-1]) if '<punct>' in l_context else l_context)
+            clean_left.extend(self._prune_at_punctuation(l_context[::-1]) if "<punct>" in l_context else l_context)
 
         r_context: str
         for r_context in right_context:
-            clean_right.extend(self._prune_at_punctuation(r_context) if '<punct>' in r_context else r_context)
+            clean_right.extend(self._prune_at_punctuation(r_context) if "<punct>" in r_context else r_context)
 
         return clean_left, clean_right
 
@@ -423,7 +425,7 @@ class YAKE:
         :param context: list[words] -> context
         :return: list[words] -> context up to first punctuation (excluding)
         """
-        return context[:context.index('<punct>')]
+        return context[: context.index("<punct>")]
 
     @staticmethod
     def _remove_starting_capitalization(sentences: list[list[str]]) -> list[list[str]]:
@@ -474,8 +476,10 @@ class YAKE:
         :return: boolean
         """
 
-        return any((1.0 - levenshtein_distance(candidate, keyword)[0] / max(len(candidate), len(keyword)) > threshold)
-                   for keyword, _ in already_considered)
+        return any(
+            (1.0 - levenshtein_distance(candidate, keyword)[0] / max(len(candidate), len(keyword)) > threshold)
+            for keyword, _ in already_considered
+        )
 
     @staticmethod
     def _generate_n_grams(sentence: list[str], step: int) -> list[list[str]]:
@@ -488,11 +492,11 @@ class YAKE:
         """
 
         # len(sentence) + 1 - step allows the last iteration to be perfectly within the final n_gram
-        return [sentence[start:start+step] for start in range(len(sentence) + 1 - step)]
+        return [sentence[start : start + step] for start in range(len(sentence) + 1 - step)]
 
     def extract_keywords(
-            self: "YAKE", text: str, num_keywords: int = 20, stopword_weighting: str = 'penalize'
-        ) -> list[tuple[str, float]]:
+        self: "YAKE", text: str, num_keywords: int = 20, stopword_weighting: str = "penalize"
+    ) -> list[tuple[str, float]]:
         """
         Extract keywords according to given parameters and weighing method.
 
@@ -508,14 +512,15 @@ class YAKE:
         # Weight individual terms
         self.term_weights = {word: self._word_weight(word) for word in self.term_frequency}
 
-        keyword_weighting: dict[str, Callable] = {'penalize': self._keyword_weight_penalize,
-                             'same': self._keyword_weight_same,
-                             'none': self._keyword_weight_none}
+        keyword_weighting: dict[str, Callable] = {
+            "penalize": self._keyword_weight_penalize,
+            "same": self._keyword_weight_same,
+            "none": self._keyword_weight_none,
+        }
 
         # Weight keyword (obtained by sliding window during preprocessing) according to weighting technique
         keyword_weights: dict[str, float] = {
-            " ".join(keyword): keyword_weighting[stopword_weighting](keyword)
-            for keyword in self.keywords
+            " ".join(keyword): keyword_weighting[stopword_weighting](keyword) for keyword in self.keywords
         }
 
         # Sort keywords in ascending order according to their weight score
@@ -536,12 +541,14 @@ class YAKE:
 
 
 if __name__ == "__main__":
-    text_content = ("In this work, we propose a lightweight approach for keyword extraction and ranking based on an "
+    text_content = (
+        "In this work, we propose a lightweight approach for keyword extraction and ranking based on an "
         "unsupervised methodology to select the most important keywords of a single document. To understand "
         "the merits of our proposal, we compare it against RAKE, textrank and singlerank methods (three well-known "
         "unsupervised approaches) and the baseline tf-idf, over four different collections to illustrate the "
         "generality of our approach. The experimental results suggest that extracting keywords from documents using "
-        "our method results in a superior effectiveness when compared to similar approaches.")
+        "our method results in a superior effectiveness when compared to similar approaches."
+    )
 
     reproduce_yake = True
 
@@ -551,7 +558,7 @@ if __name__ == "__main__":
     if reproduce_yake:
 
         # Since I do not own stopword list, I won't include it in this project
-        with open('data/stopwords_en.txt') as f:
+        with open("data/stopwords_en.txt") as f:
             stop_lst = f.read().splitlines()
 
         original_stopword_length = 575
@@ -559,7 +566,7 @@ if __name__ == "__main__":
             raise ValueError("Stopword list is different")
 
         yake = YAKE(stoplist=stop_lst, reproduce=reproduce_yake, window=1)
-        response = yake.extract_keywords(text_content, stopword_weighting='penalize', num_keywords=50)
+        response = yake.extract_keywords(text_content, stopword_weighting="penalize", num_keywords=50)
 
         # This list was obtained in the following manner, using official YAKE algorithm
         #
@@ -568,24 +575,56 @@ if __name__ == "__main__":
         # actual_yake_response = [(k, round(v, 6))for k,v in kw_extractor.extract_keywords(text)]
 
         actual_yake_response = [
-            ('propose a lightweight', 0.028374), ('extraction and ranking', 0.028374), ('ranking based', 0.028374),
-            ('methodology to select', 0.028374), ('well-known unsupervised approaches', 0.046841),
-            ('lightweight approach', 0.049308), ('unsupervised methodology', 0.049308), ('single document', 0.064314),
-            ('keyword extraction', 0.069818), ('important keywords', 0.069818), ('unsupervised approaches', 0.093349),
-            ('work', 0.127663), ('well-known unsupervised', 0.130814),
-            ('approach', 0.141448), ('unsupervised', 0.141448),
-            ('approaches', 0.150902), ('textrank and singlerank', 0.159825), ('baseline tf-idf', 0.159825),
-            ('propose', 0.166106), ('lightweight', 0.166106), ('extraction', 0.166106), ('ranking', 0.166106),
-            ('based', 0.166106), ('methodology', 0.166106), ('select', 0.166106), ('important', 0.166106),
-            ('single', 0.166106), ('similar approaches', 0.178547), ('rake', 0.181201), ('keywords', 0.196446),
-            ('understand the merits', 0.200788), ('collections to illustrate', 0.200788),
-            ('illustrate the generality', 0.200788), ('singlerank methods', 0.205429),
-            ('extracting keywords', 0.245673), ('results', 0.251994), ('experimental results suggest', 0.256018),
-            ('method results', 0.265889), ('suggest that extracting', 0.336858),
-            ('superior effectiveness', 0.336858), ('effectiveness when compared', 0.336858),
-            ('compared to similar', 0.336858), ('proposal', 0.336989), ('textrank', 0.336989), ('tf-idf', 0.336989),
-            ('experimental results', 0.338667), ('results suggest', 0.338667), ('document', 0.363788),
-            ('approach for keyword', 0.387358), ('understand', 0.408918)
+            ("propose a lightweight", 0.028374),
+            ("extraction and ranking", 0.028374),
+            ("ranking based", 0.028374),
+            ("methodology to select", 0.028374),
+            ("well-known unsupervised approaches", 0.046841),
+            ("lightweight approach", 0.049308),
+            ("unsupervised methodology", 0.049308),
+            ("single document", 0.064314),
+            ("keyword extraction", 0.069818),
+            ("important keywords", 0.069818),
+            ("unsupervised approaches", 0.093349),
+            ("work", 0.127663),
+            ("well-known unsupervised", 0.130814),
+            ("approach", 0.141448),
+            ("unsupervised", 0.141448),
+            ("approaches", 0.150902),
+            ("textrank and singlerank", 0.159825),
+            ("baseline tf-idf", 0.159825),
+            ("propose", 0.166106),
+            ("lightweight", 0.166106),
+            ("extraction", 0.166106),
+            ("ranking", 0.166106),
+            ("based", 0.166106),
+            ("methodology", 0.166106),
+            ("select", 0.166106),
+            ("important", 0.166106),
+            ("single", 0.166106),
+            ("similar approaches", 0.178547),
+            ("rake", 0.181201),
+            ("keywords", 0.196446),
+            ("understand the merits", 0.200788),
+            ("collections to illustrate", 0.200788),
+            ("illustrate the generality", 0.200788),
+            ("singlerank methods", 0.205429),
+            ("extracting keywords", 0.245673),
+            ("results", 0.251994),
+            ("experimental results suggest", 0.256018),
+            ("method results", 0.265889),
+            ("suggest that extracting", 0.336858),
+            ("superior effectiveness", 0.336858),
+            ("effectiveness when compared", 0.336858),
+            ("compared to similar", 0.336858),
+            ("proposal", 0.336989),
+            ("textrank", 0.336989),
+            ("tf-idf", 0.336989),
+            ("experimental results", 0.338667),
+            ("results suggest", 0.338667),
+            ("document", 0.363788),
+            ("approach for keyword", 0.387358),
+            ("understand", 0.408918),
         ]
 
         if not all((keyword.lower(), score) in actual_yake_response for keyword, score in response):

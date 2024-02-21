@@ -53,8 +53,8 @@ if __name__ == "__main__":
     fig, ax = plt.subplots(figsize=(4, 4))
 
     ax.scatter(X, y, alpha=0.5)
-    ax.plot(x_line, y_line, color='navy')
+    ax.plot(x_line, y_line, color="navy")
 
-    ax.set_xlabel('$x_1$')
-    ax.set_ylabel('$x_2$')
+    ax.set_xlabel("$x_1$")
+    ax.set_ylabel("$x_2$")
     fig.show()

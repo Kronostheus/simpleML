@@ -46,8 +46,9 @@ class ID3Tree:
         np.flatnonzero is equivalent to a flatten np.where when only 'condition' is provided
         we compute the entropy for each possible value of feature
         """
-        feat_entropy: list[float] = [self.entropy(np.take(targets, np.flatnonzero(feature == unq)))
-                        for unq in np.unique(feature)]
+        feat_entropy: list[float] = [
+            self.entropy(np.take(targets, np.flatnonzero(feature == unq))) for unq in np.unique(feature)
+        ]
 
         return np.sum(np.multiply(probs, feat_entropy))
 
@@ -69,16 +70,16 @@ class ID3Tree:
         data_entropy: float = self.entropy(targets)
 
         # Information Gain: IG(T, X) = H(T) - H(T|X)
-        information_gain: np.ndarray = data_entropy - np.array([self.conditional_entropy(feature, targets)
-                                                    for feature in features.T])
+        information_gain: np.ndarray = data_entropy - np.array(
+            [self.conditional_entropy(feature, targets) for feature in features.T]
+        )
 
         # Get the feature that maximizes IG
         self.node: int = np.argmax(information_gain)
 
         # For every unique value of that feature, select its row indices
         split_indices: list[np.ndarray] = [
-            np.flatnonzero(features[:, self.node] == unq)
-            for unq in np.unique(features[:, self.node])
+            np.flatnonzero(features[:, self.node] == unq) for unq in np.unique(features[:, self.node])
         ]
 
         split_idx: int
@@ -111,33 +112,37 @@ class ID3Tree:
 
 if __name__ == "__main__":
 
-
-    X: np.ndarray = np.array([
-        [0, 0, 0, 0],
-        [0, 0, 0, 1],
-        [1, 0, 0, 0],
-        [2, 1, 0, 0],
-        [2, 2, 1, 0],
-        [2, 2, 1, 1],
-        [1, 2, 1, 1],
-        [0, 1, 0, 0],
-        [0, 2, 1, 0],
-        [2, 1, 1, 0],
-        [0, 1, 1, 1],
-        [1, 1, 0, 1],
-        [1, 0, 1, 0],
-        [2, 1, 0, 1]])
+    X: np.ndarray = np.array(
+        [
+            [0, 0, 0, 0],
+            [0, 0, 0, 1],
+            [1, 0, 0, 0],
+            [2, 1, 0, 0],
+            [2, 2, 1, 0],
+            [2, 2, 1, 1],
+            [1, 2, 1, 1],
+            [0, 1, 0, 0],
+            [0, 2, 1, 0],
+            [2, 1, 1, 0],
+            [0, 1, 1, 1],
+            [1, 1, 0, 1],
+            [1, 0, 1, 0],
+            [2, 1, 0, 1],
+        ]
+    )
 
     y: np.ndarray = np.array([0, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0])
 
     tree: ID3Tree = ID3Tree()
     tree.split(X, y)
-    preds: list[int] = tree.predict([
-        [0, 2, 0, 1],   # Sunny, Cool, High, Strong
-        [0, 2, 1, 0],   # Sunny, Cool, Normal, Weak
-        [1, 1, 1, 1],   # Overcast, Mild, Normal, Strong
-        [2, 2, 0, 0],   # Rainy, Cool, High, Weak
-        [2, 0, 1, 1]    # Rainy, Hot, Normal, Strong
-    ])
+    preds: list[int] = tree.predict(
+        [
+            [0, 2, 0, 1],  # Sunny, Cool, High, Strong
+            [0, 2, 1, 0],  # Sunny, Cool, Normal, Weak
+            [1, 1, 1, 1],  # Overcast, Mild, Normal, Strong
+            [2, 2, 0, 0],  # Rainy, Cool, High, Weak
+            [2, 0, 1, 1],  # Rainy, Hot, Normal, Strong
+        ]
+    )
     if preds != [0, 1, 1, 1, 0]:
         raise Exception("Test failed")
