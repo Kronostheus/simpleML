@@ -2,7 +2,7 @@ import re
 from collections import Counter
 from itertools import groupby, repeat
 from string import punctuation
-from typing import NamedTuple, Optional
+from typing import NamedTuple
 
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
@@ -20,13 +20,14 @@ class RAKE:
     Originally described in "Automatic Keyword Extraction from Individual Documents"
     by Stuart Rose, Dave Engel, Nick Cramer and Wendy Cowley (2010).
     """
+
     def __init__(
-            self: "RAKE",
-            language: str = 'english',
-            min_length: int = 1,
-            max_length: int = 4,
-            num_keywords: Optional[int] = None
-        ) -> None:
+        self: "RAKE",
+        language: str = "english",
+        min_length: int = 1,
+        max_length: int = 4,
+        num_keywords: int | None = None,
+    ) -> None:
 
         self.language: str = language
         self.max_length: int = max_length
@@ -79,18 +80,17 @@ class RAKE:
         split_on_max: list[list[str]] = [
             reduced_candidate
             for candidate in split_on_punctuation
-            for reduced_candidate in [candidate[i:i + self.max_length]
-                                      for i in range(0, len(candidate), self.max_length)]
+            for reduced_candidate in [
+                candidate[i : i + self.max_length] for i in range(0, len(candidate), self.max_length)
             ]
+        ]
 
         # Generate candidates that might have interior stopwords but are important (appear multiple times) nonetheless
         adjoined_candidates: list[Candidate] = self._adjoining_keywords(split_on_max, text.lower())
 
         # Remove candidates that do not have minimum amount of keywords
         candidates: list[Candidate] = [
-            Candidate(candidate, ' '.join(candidate))
-            for candidate in split_on_max
-            if len(candidate) >= self.min_length
+            Candidate(candidate, " ".join(candidate)) for candidate in split_on_max if len(candidate) >= self.min_length
         ]
 
         # Adjoined candidates might have more than the minimum necessary, but individually would not
@@ -149,7 +149,7 @@ class RAKE:
         # Sliding window on pairs of keywords
         _former: str
         _latter: str
-        for _former, _latter in zip(keywords, keywords[1:]):
+        for _former, _latter in zip(keywords, keywords[1:], strict=False):
 
             # Total keywords if both elements are joined
             total_keywords: int = len(_former) + len(_latter)
@@ -164,7 +164,7 @@ class RAKE:
             former, latter = (" ".join(keywords) for keywords in (_former, _latter))
 
             # Find potential interior stopwords (this has the possibility of finding weird matches as well)
-            all_matches: list[Optional[str]] = re.findall(rf'{former}([\w\s]+?){latter}', original_text)
+            all_matches: list[str | None] = re.findall(rf"{former}([\w\s]+?){latter}", original_text)
 
             # Ensure that matches are exclusively stopwords
             filter_matches: list[str] = [
@@ -173,11 +173,13 @@ class RAKE:
 
             # The connecting stopwords must be found in the text at least twice
             if len(filter_matches) > 1:
-                adjoining.extend([
-                    Candidate([former, latter], f'{former}{interior_keywords}{latter}')
-                    for interior_keywords, count in Counter(filter_matches).items()
-                    if count > 1
-                ])
+                adjoining.extend(
+                    [
+                        Candidate([former, latter], f"{former}{interior_keywords}{latter}")
+                        for interior_keywords, count in Counter(filter_matches).items()
+                        if count > 1
+                    ]
+                )
 
         return adjoining
 
@@ -203,23 +205,33 @@ class RAKE:
 
         # Only return specified amount of candidates
         if self.num_keywords:
-            return sorted_candidate_keywords[:self.num_keywords]
+            return sorted_candidate_keywords[: self.num_keywords]
 
-        return sorted_candidate_keywords[:round(len(candidate_scores)/3)]
+        return sorted_candidate_keywords[: round(len(candidate_scores) / 3)]
 
 
 if __name__ == "__main__":
-    test_text = ("Compatibility of systems of linear constraints over the set of natural numbers.\nCriteria of "
-                "compatibility of a system of linear Diophantine equations, strict inequations, and nonstrict "
-                "inequations are considered. Upper bounds for components of a minimal set of solutions "
-                "and algorithms of construction of minimal generating sets of solutions for all types of systems are "
-                "given. These criteria and the corresponding algorithms for constructing a minimal supporting set of "
-                "solutions can be used in solving all the considered types of systems and systems of mixed types")
+    test_text = (
+        "Compatibility of systems of linear constraints over the set of natural numbers.\nCriteria of "
+        "compatibility of a system of linear Diophantine equations, strict inequations, and nonstrict "
+        "inequations are considered. Upper bounds for components of a minimal set of solutions "
+        "and algorithms of construction of minimal generating sets of solutions for all types of systems are "
+        "given. These criteria and the corresponding algorithms for constructing a minimal supporting set of "
+        "solutions can be used in solving all the considered types of systems and systems of mixed types"
+    )
 
-    rake = RAKE('english')
+    rake = RAKE("english")
     result = rake.extract_keywords(test_text)
 
-    if result != ['minimal generating sets', 'linear diophantine equations', 'minimal supporting set',
-                      'minimal set', 'linear constraints', 'natural numbers', 'strict inequations',
-                      'nonstrict inequations', 'upper bounds']:
+    if result != [
+        "minimal generating sets",
+        "linear diophantine equations",
+        "minimal supporting set",
+        "minimal set",
+        "linear constraints",
+        "natural numbers",
+        "strict inequations",
+        "nonstrict inequations",
+        "upper bounds",
+    ]:
         raise Exception("Algorithm changed")

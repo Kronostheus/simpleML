@@ -34,8 +34,7 @@ class GaussianNB:
 
         # Save mean and variance of features (columns) attending to their label/class
         self.parameters: dict[int, list[Param]] = {
-            c: [Param(np.mean(Xc), np.var(Xc)) for Xc in features[np.where(labels == c)].T]
-            for c in self.classes
+            c: [Param(np.mean(Xc), np.var(Xc)) for Xc in features[np.where(labels == c)].T] for c in self.classes
         }
 
     @staticmethod
@@ -67,17 +66,24 @@ class GaussianNB:
             # Get the class
             self.classes[
                 # That maximizes
-                np.argmax([
-                    # The product of the features probabilities conditional on each class, along with said class' prior
-                    np.prod([self.conditional_probability(feature, p)
-                             for feature, p in zip(sample, params)] + [self.class_priors[c]])
-                    # Do this for every class and respective parameters
-                    for c, params in self.parameters.items()])
+                np.argmax(
+                    [
+                        # The product of the features probs conditional on each class, along with said class' prior
+                        np.prod(
+                            [
+                                self.conditional_probability(feature, p)
+                                for feature, p in zip(sample, params, strict=True)
+                            ]
+                            + [self.class_priors[c]]
+                        )
+                        # Do this for every class and respective parameters
+                        for c, params in self.parameters.items()
+                    ]
+                )
             ]
             # For every data sample
             for sample in features
         ]
-
 
 
 if __name__ == "__main__":

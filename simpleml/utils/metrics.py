@@ -18,6 +18,6 @@ def r2_score(y_true: np.ndarray, y_pred: np.ndarray) -> float:
     tss: float = sum([(true - true_mean) ** 2 for true in y_true])
 
     # Residual sum of squares
-    rss: float = sum([(true - pred) ** 2 for true, pred in zip(y_true, y_pred)])
+    rss: float = sum([(true - pred) ** 2 for true, pred in zip(y_true, y_pred, strict=True)])
 
     return 1 - (rss / tss)

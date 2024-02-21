@@ -1,5 +1,4 @@
 import numpy as np
-
 from utils.calculations import minkowski_distance
 
 
@@ -87,14 +86,16 @@ class DBSCAN:
         :param query_index: focus point
         :return: surrounding neighbors
         """
-        return [i for i, _ in enumerate(self.samples)
-                if i != query_index and minkowski_distance(self.samples[query_index], self.samples[i]) <= self.eps]
+        return [
+            i
+            for i, _ in enumerate(self.samples)
+            if i != query_index and minkowski_distance(self.samples[query_index], self.samples[i]) <= self.eps
+        ]
 
 
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
     from sklearn.datasets import make_circles, make_moons
-
 
     X, _ = make_moons(300, noise=0.05)
 
@@ -102,7 +103,7 @@ if __name__ == "__main__":
     dbscan.fit(X)
     labels = dbscan.predict()
 
-    group_colors = ['lightgreen', 'coral', 'skyblue']
+    group_colors = ["lightgreen", "coral", "skyblue"]
     colors = [group_colors[j] for j in labels]
 
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(6.4, 6.4))

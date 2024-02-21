@@ -1,5 +1,4 @@
 import numpy as np
-
 from utils.calculations import minkowski_distance
 
 
@@ -69,7 +68,7 @@ class KMeans:
 
         return labels
 
-    def predict(self: "KMeans", samples: np.ndarray) ->  list[int]:
+    def predict(self: "KMeans", samples: np.ndarray) -> list[int]:
         """
         Predicts unseen data samples by simply assigning the cluster label of the closest centroid.
         Does not alter clusters.
@@ -84,26 +83,27 @@ class KMeans:
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
     from sklearn.datasets import make_blobs
+
     # Generate dataset
     X, y = make_blobs(centers=3, n_samples=500, random_state=1)
 
     # Visualize
     fig, ax = plt.subplots(figsize=(4, 4))
     ax.scatter(X[:, 0], X[:, 1], alpha=0.5)
-    ax.set_xlabel('$x_1$')
-    ax.set_ylabel('$x_2$')
+    ax.set_xlabel("$x_1$")
+    ax.set_ylabel("$x_2$")
     fig.show()
 
     # Initialize KMeans with 3 clusters
     kmeans = KMeans(3)
     classes = kmeans.fit(X)
 
-    group_colors = ['skyblue', 'coral', 'lightgreen']
+    group_colors = ["skyblue", "coral", "lightgreen"]
     colors = [group_colors[j] for j in classes]
 
     fig2, ax2 = plt.subplots(figsize=(4, 4))
     ax2.scatter(X[:, 0], X[:, 1], color=colors, alpha=0.5)
-    ax2.scatter(kmeans.centroids[:, 0], kmeans.centroids[:, 1], color=['blue', 'darkred', 'green'], marker='o', lw=2)
-    ax2.set_xlabel('$x_0$')
-    ax2.set_ylabel('$x_1$')
+    ax2.scatter(kmeans.centroids[:, 0], kmeans.centroids[:, 1], color=["blue", "darkred", "green"], marker="o", lw=2)
+    ax2.set_xlabel("$x_0$")
+    ax2.set_ylabel("$x_1$")
     plt.show()

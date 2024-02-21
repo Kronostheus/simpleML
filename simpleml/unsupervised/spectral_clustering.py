@@ -1,6 +1,5 @@
 import numpy as np
 import scipy as sp
-
 from unsupervised.kmeans import KMeans
 from utils.calculations import minkowski_distance
 
@@ -20,10 +19,13 @@ class Spectral:
         """
         return [
             np.mean(
-                np.sort([
-                    minkowski_distance(sample, other, p=2)
-                    for other in self.samples if not np.array_equal(sample, other)
-                ])[:self.kth_neighbor]
+                np.sort(
+                    [
+                        minkowski_distance(sample, other, p=2)
+                        for other in self.samples
+                        if not np.array_equal(sample, other)
+                    ]
+                )[: self.kth_neighbor]
             )
             for sample in self.samples
         ]
@@ -69,7 +71,7 @@ class Spectral:
         affinity: np.ndarray = self._affinity_matrix()
 
         # Square root of diagonal matrix (D) composed of the sum of each of A's rows => D^1/2
-        d: np.ndarray = np.diag(np.power(np.sum(affinity, axis=0), -1/2))
+        d: np.ndarray = np.diag(np.power(np.sum(affinity, axis=0), -1 / 2))
 
         # Compute laplacian matrix (L) using formula L = D^1/2 . A . D^1/2
         laplacian: np.ndarray = d @ affinity @ d
@@ -90,16 +92,17 @@ class Spectral:
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
     from sklearn.datasets import make_moons
+
     # Generate dataset
     X, _ = make_moons(300, noise=0.05)
 
     spectral = Spectral(n_clusters=2)
     clusters = spectral.fit(X)
 
-    group_colors = ['skyblue', 'coral', 'lightgreen']
+    group_colors = ["skyblue", "coral", "lightgreen"]
     colors = [group_colors[j] for j in clusters]
 
     fig, ax = plt.subplots(figsize=(4, 4))
     ax.scatter(X[:, 0], X[:, 1], color=colors, alpha=0.5)
-    ax.set_title('Spectral Clustering')
+    ax.set_title("Spectral Clustering")
     plt.show()

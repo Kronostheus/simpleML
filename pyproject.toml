@@ -15,7 +15,18 @@ scipy = "^1.12.0"
 [tool.poetry.group.dev.dependencies]
 scikit-learn = "^1.4.0"
 matplotlib = "^3.8.2"
-ruff = "^0.2.1"
+ruff = "^0.2.2"
+pre-commit = "^3.6.2"
+black = "^24.2.0"
+isort = "^5.13.2"
+
+[tool.black]
+line-length = 120
+
+[tool.isort]
+profile = "black"
+line_length = 120
+multi_line_output = 3
 
 [tool.ruff]
 lint.select = ["E", "F", "I", "B", "W", "N", "UP", "A", "NPY", "PTH", "RET", "SIM", "ARG", "PL", "C90", "S", "C4", "ICN", "ISC", "INP", "PIE", "PYI", "ANN"]
@@ -24,6 +35,7 @@ lint.ignore = [
 ]
 line-length = 120
 exclude = ["__init__.py"]
+target-version = "py311"
 
 [build-system]
 requires = ["poetry-core"]

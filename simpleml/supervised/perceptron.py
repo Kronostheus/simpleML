@@ -80,7 +80,6 @@ class Perceptron:
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
 
-
     # Positive examples
     P: np.ndarray = np.array([[-2, 0], [-1, 0.5], [0, -0.1], [1, -1.5]])
 
@@ -98,11 +97,11 @@ if __name__ == "__main__":
     n_pred: np.ndarray = features[np.nonzero(preds == -1)]
 
     fig, (ax1, ax2) = plt.subplots(2, 1)
-    ax1.plot(P[:, 0], P[:, 1], 'go', label='True Positive Examples')
-    ax1.plot(N[:, 0], N[:, 1], 'ro', label='True Negative Examples')
-    ax1.legend(loc='best')
+    ax1.plot(P[:, 0], P[:, 1], "go", label="True Positive Examples")
+    ax1.plot(N[:, 0], N[:, 1], "ro", label="True Negative Examples")
+    ax1.legend(loc="best")
 
-    ax2.plot(p_pred[:, 0], p_pred[:, 1], 'go', label='Predicted Positive Examples')
-    ax2.plot(n_pred[:, 0], n_pred[:, 1], 'ro', label='Predicted Positive Examples')
-    ax2.legend(loc='best')
+    ax2.plot(p_pred[:, 0], p_pred[:, 1], "go", label="Predicted Positive Examples")
+    ax2.plot(n_pred[:, 0], n_pred[:, 1], "ro", label="Predicted Positive Examples")
+    ax2.legend(loc="best")
     plt.show()

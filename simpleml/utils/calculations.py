@@ -6,16 +6,12 @@ def minkowski_distance(v1: float, v2: float, p: int = 2) -> float:
         raise ValueError("Vectors have different lengths")
     if p <= 0:
         raise ValueError("P should b positive")
-    return sum([(v1i - v2i) ** p for v1i, v2i in zip(v1, v2)]) ** (1/p)
+    return sum([(v1i - v2i) ** p for v1i, v2i in zip(v1, v2, strict=True)]) ** (1 / p)
 
 
 def levenshtein_distance(
-        first_sequence: str,
-        second_sequence: str,
-        del_cost: int = 1,
-        ins_cost: int = 1,
-        sub_cost: int = 1
-    ) -> tuple[np.ndarray, np.ndarray]:
+    first_sequence: str, second_sequence: str, del_cost: int = 1, ins_cost: int = 1, sub_cost: int = 1
+) -> tuple[np.ndarray, np.ndarray]:
 
     rows: int = len(first_sequence) + 1
     cols: int = len(second_sequence) + 1
@@ -30,11 +26,11 @@ def levenshtein_distance(
 
     for col in range(1, cols):
         for row in range(1, rows):
-            is_substitution: int = 0 if first_sequence[row-1] == second_sequence[col-1] else sub_cost
+            is_substitution: int = 0 if first_sequence[row - 1] == second_sequence[col - 1] else sub_cost
             distances[row, col] = min(
-                distances[row-1, col] + del_cost,
-                distances[row, col-1] + ins_cost,
-                distances[row - 1, col - 1] + is_substitution
+                distances[row - 1, col] + del_cost,
+                distances[row, col - 1] + ins_cost,
+                distances[row - 1, col - 1] + is_substitution,
             )
 
-    return distances[rows-1, cols-1], distances
+    return distances[rows - 1, cols - 1], distances
